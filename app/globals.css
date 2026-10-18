@@ -218,10 +218,12 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .auth-current button { border-color: #404841; background: transparent; color: var(--ink); }
 
 /* Celular 3D: el canvas es transparente y toma el fondo de la página */
-.phone-page { position: relative; min-height: 100svh; background: radial-gradient(circle at 50% 50%, rgba(214,31,38,.12), transparent 50%), linear-gradient(115deg, #0c100d, #030403 68%); }
+.phone-page { position: relative; min-height: 100svh; background: linear-gradient(115deg, #0c100d, #030403 68%); }
 .phone-hint { position: absolute; z-index: 2; left: 0; right: 0; bottom: 28px; margin: 0; color: var(--muted); font-size: 9px; letter-spacing: .2em; text-align: center; pointer-events: none; }
 .phone-stage { position: relative; height: 100svh; }
-.phone-canvas { position: relative; width: 100%; height: 100%; cursor: grab; }
+/* Halo rojo circular detrás del celular. */
+.phone-stage::before { content: ""; position: absolute; top: 50%; left: 50%; width: min(86svh, 120vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(214,31,38,.32), rgba(214,31,38,.12) 38%, transparent 68%); transform: translate(-50%, -50%); pointer-events: none; }
+.phone-canvas { position: relative; z-index: 1; width: 100%; height: 100%; cursor: grab; }
 .phone-canvas:active { cursor: grabbing; }
 /* El HTML de la pantalla va debajo; el canvas WebGL encima, sin recibir eventos. */
 .phone-css-layer { position: absolute; inset: 0; z-index: 0; }
@@ -377,8 +379,8 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 
 /* z-index por encima de .noise y .scanlines: la textura no cubre al celular. */
 .phone-scroll { position: relative; z-index: 21; height: 260svh; }
-.phone-scroll-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(circle at 50% 50%, rgba(214,31,38,.12), transparent 50%), linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
-.phone-status { position: absolute; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
+.phone-scroll-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
+.phone-status { position: absolute; z-index: 2; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
 
 @media (max-width: 900px) {
   .chapter-layout { grid-template-columns: 1fr; padding-inline: 18px; overflow-y: auto; }
