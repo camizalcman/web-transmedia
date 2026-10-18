@@ -9,7 +9,7 @@ export const chapters = [
     clueId: "tone",
     clueLabel: "TONO 17.6",
     instruction: "Tocá el núcleo para aislar la frecuencia.",
-    color: "#ff3d81",
+    color: "#d61f26",
     accent: "#63f3ff",
   },
   {
