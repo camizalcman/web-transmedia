@@ -101,7 +101,7 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 @keyframes cue { 0%, 100% { opacity: .4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(8px); } }
 
 /* Evidencias: escenario fijo que avanza con el scroll (--p de 0 a 1) */
-.evidence-scroll { position: relative; height: 720svh; }
+.evidence-scroll { position: relative; height: 560svh; }
 .evidence-stage { --p: 0; position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(circle at 50% 45%, rgba(125,31,44,.2), transparent 55%), linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
 .evidence-stage::before { content: ""; position: absolute; z-index: 13; left: 0; right: 0; bottom: 0; height: 45%; pointer-events: none; background: linear-gradient(transparent, rgba(5,7,6,.85)); }
 .evidence-stage::after { content: ""; position: absolute; z-index: 12; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.75)); }
@@ -399,7 +399,7 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
   .auth-panel { padding: 26px 20px; }
 
   .intro-video-hud, .evidence-hud { padding: 18px; font-size: 9px; }
-  .evidence-scroll { height: 620svh; }
+  .evidence-scroll { height: 500svh; }
   .evidence { --d: var(--mdepth); left: var(--mx); top: var(--my); width: var(--mw); }
   .evidence--left { --from-x: -110vw; }
   .evidence--right { --from-x: 110vw; }

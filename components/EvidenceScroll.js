@@ -121,7 +121,6 @@ export default function EvidenceScroll({ id }) {
               </div>
               <figcaption>
                 <span>{item.id.toUpperCase()}</span> {item.label}
-                <small>{item.meta}</small>
               </figcaption>
             </figure>
           ))}
