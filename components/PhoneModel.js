@@ -1,12 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { CSS3DObject, CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
+import PhoneScreen from "@/components/PhoneScreen";
 
 const MODEL_URL = "/models/apple_iphone_13_pro_max.glb";
+// Ancho en px CSS con el que se maqueta la interfaz de la pantalla.
+const SCREEN_CSS_WIDTH = 390;
 
 // Sin `entranceRef` el celular se explora libremente (rotacion y zoom).
 // Con `entranceRef` (valor de 0 a 1 que actualiza el scroll) el celular entra
@@ -16,6 +21,7 @@ export default function PhoneModel({ entranceRef }) {
   const mountRef = useRef(null);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("loading");
+  const [screenNode, setScreenNode] = useState(null);
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -37,7 +43,16 @@ export default function PhoneModel({ entranceRef }) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    mount.appendChild(renderer.domElement);
+    renderer.domElement.classList.add("phone-webgl");
+
+    // Capa HTML de la pantalla: CSS3DRenderer le aplica a un <div> real la misma
+    // transformacion 3D que tiene la pantalla del modelo. Queda DETRAS del
+    // canvas WebGL, que deja un hueco transparente justo en la pantalla: asi el
+    // marco, el notch y el vidrio se dibujan encima y la carcasa la tapa sola
+    // cuando el celular gira de espaldas.
+    const cssRenderer = new CSS3DRenderer();
+    cssRenderer.domElement.classList.add("phone-css-layer");
+    mount.append(cssRenderer.domElement, renderer.domElement);
 
     // Los materiales metalicos del modelo necesitan algo que reflejar: un
     // entorno generado (no se muestra como fondo, solo ilumina).
@@ -53,7 +68,9 @@ export default function PhoneModel({ entranceRef }) {
     rimLight.position.set(-3, 1, -3);
     scene.add(rimLight);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
+    // Los controles escuchan al contenedor (el canvas no recibe eventos para
+    // que los clics lleguen a la interfaz de la pantalla).
+    const controls = new OrbitControls(camera, mount);
     controls.enableDamping = true;
     controls.dampingFactor = 0.08;
     controls.enablePan = false;
@@ -63,12 +80,13 @@ export default function PhoneModel({ entranceRef }) {
       controls.enableZoom = false;
       // En pantallas tactiles el gesto vertical sigue scrolleando la pagina;
       // el horizontal gira el celular.
-      renderer.domElement.style.touchAction = "pan-y";
+      mount.style.touchAction = "pan-y";
     }
 
     function resize() {
       const { clientWidth, clientHeight } = mount;
       renderer.setSize(clientWidth, clientHeight, false);
+      cssRenderer.setSize(clientWidth, clientHeight);
       camera.aspect = clientWidth / Math.max(clientHeight, 1);
       camera.updateProjectionMatrix();
     }
@@ -101,14 +119,8 @@ export default function PhoneModel({ entranceRef }) {
         }
         model = gltf.scene;
 
-        // El mapeo UV del wallpaper viene invertido verticalmente en el archivo.
-        // (flipY no sirve: GLTFLoader carga las texturas como ImageBitmap.)
-        model.traverse((child) => {
-          const map = child.isMesh && child.material.name === "Wallpaper" && child.material.map;
-          if (!map) return;
-          map.center.set(0.5, 0.5);
-          map.repeat.set(1, -1);
-        });
+        const screenMesh = model.getObjectByName("Body_Wallpaper_0");
+        if (screenMesh) setScreenNode(attachScreen(screenMesh));
 
         // La pantalla del modelo mira hacia -Z: se gira para que quede de frente.
         model.rotation.y = Math.PI;
@@ -130,6 +142,40 @@ export default function PhoneModel({ entranceRef }) {
       },
     );
 
+    // Reemplaza el wallpaper por un hueco transparente y ubica sobre la misma
+    // superficie un <div> del tamaño exacto de la pantalla.
+    function attachScreen(screenMesh) {
+      const original = screenMesh.material;
+      screenMesh.material = new THREE.MeshBasicMaterial({
+        color: 0x000000,
+        opacity: 0,
+        blending: THREE.NoBlending,
+        side: THREE.DoubleSide,
+      });
+      disposeMaterial(original);
+
+      screenMesh.geometry.computeBoundingBox();
+      const bounds = screenMesh.geometry.boundingBox;
+      const size = bounds.getSize(new THREE.Vector3());
+      const center = bounds.getCenter(new THREE.Vector3());
+
+      const element = document.createElement("div");
+      element.className = "phone-screen";
+      element.style.width = `${SCREEN_CSS_WIDTH}px`;
+      element.style.height = `${Math.round((SCREEN_CSS_WIDTH * size.y) / size.x)}px`;
+      // Lo que pasa dentro de la pantalla no debe girar ni hacer zoom.
+      element.addEventListener("pointerdown", (event) => event.stopPropagation());
+      element.addEventListener("wheel", (event) => event.stopPropagation());
+
+      const screenObject = new CSS3DObject(element);
+      screenObject.position.copy(center);
+      // El frente de la pantalla mira hacia -Z en el espacio de su malla.
+      screenObject.rotation.y = Math.PI;
+      screenObject.scale.setScalar(size.x / SCREEN_CSS_WIDTH);
+      screenMesh.add(screenObject);
+      return element;
+    }
+
     // Entrada: sube desde abajo girando sobre si mismo hasta quedar de frente.
     function applyEntrance() {
       entrance += (entranceRef.current - entrance) * 0.08;
@@ -147,6 +193,7 @@ export default function PhoneModel({ entranceRef }) {
       if (scrollDriven && modelSize) applyEntrance();
       controls.update();
       renderer.render(scene, camera);
+      cssRenderer.render(scene, camera);
     }
 
     const observer = new ResizeObserver(resize);
@@ -170,6 +217,7 @@ export default function PhoneModel({ entranceRef }) {
       pmrem.dispose();
       renderer.dispose();
       renderer.domElement.remove();
+      cssRenderer.domElement.remove();
     };
   }, [entranceRef]);
 
@@ -178,9 +226,10 @@ export default function PhoneModel({ entranceRef }) {
       <div
         ref={mountRef}
         className="phone-canvas"
-        role="img"
-        aria-label="Modelo 3D de un celular. Arrastrá para girarlo y usá la rueda para acercarlo."
+        role="group"
+        aria-label="Celular 3D. Arrastrá fuera de la pantalla para girarlo."
       />
+      {screenNode && createPortal(<PhoneScreen />, screenNode)}
       {status !== "ready" && (
         <p className="phone-status" role="status">
           {status === "error" ? "NO SE PUDO CARGAR EL MODELO" : `CARGANDO MODELO… ${progress}%`}
@@ -190,16 +239,18 @@ export default function PhoneModel({ entranceRef }) {
   );
 }
 
+function disposeMaterial(material) {
+  Object.values(material).forEach((value) => {
+    if (value?.isTexture) value.dispose();
+  });
+  material.dispose();
+}
+
 function disposeObject(object) {
   object.traverse((child) => {
     if (!child.isMesh) return;
     child.geometry.dispose();
     const materials = Array.isArray(child.material) ? child.material : [child.material];
-    materials.forEach((material) => {
-      Object.values(material).forEach((value) => {
-        if (value?.isTexture) value.dispose();
-      });
-      material.dispose();
-    });
+    materials.forEach(disposeMaterial);
   });
 }
