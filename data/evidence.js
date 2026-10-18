@@ -24,7 +24,7 @@ export const evidence = [
     enter: [0.03, 0.15],
     exit: 0.3,
     desktop: { x: 50, y: 45, w: 30, depth: -6 },
-    mobile: { x: 50, y: 40, w: 82, depth: -4 },
+    mobile: { x: 27, y: 20, w: 43, depth: -3 },
   },
   {
     id: "ev-02",
@@ -37,7 +37,7 @@ export const evidence = [
     enter: [0.13, 0.25],
     exit: 0.62,
     desktop: { x: 22, y: 29, w: 26, depth: -10 },
-    mobile: { x: 46, y: 22, w: 74, depth: -6 },
+    mobile: { x: 73, y: 20, w: 43, depth: -3 },
   },
   {
     id: "ev-03",
@@ -51,7 +51,7 @@ export const evidence = [
     enter: [0.23, 0.36],
     exit: 0.62,
     desktop: { x: 78, y: 33, w: 26, depth: -14 },
-    mobile: { x: 56, y: 42, w: 74, depth: -8 },
+    mobile: { x: 27, y: 37, w: 43, depth: -3 },
   },
   {
     id: "ev-04",
@@ -65,7 +65,7 @@ export const evidence = [
     enter: [0.34, 0.47],
     exit: 0.62,
     desktop: { x: 30, y: 72, w: 28, depth: -4 },
-    mobile: { x: 46, y: 60, w: 78, depth: -3 },
+    mobile: { x: 73, y: 37, w: 43, depth: -3 },
   },
   {
     id: "ev-05",
@@ -78,7 +78,7 @@ export const evidence = [
     enter: [0.45, 0.58],
     exit: 0.62,
     desktop: { x: 71, y: 70, w: 25, depth: -12 },
-    mobile: { x: 54, y: 78, w: 74, depth: -7 },
+    mobile: { x: 50, y: 55, w: 43, depth: -3 },
   },
   {
     id: "ev-06",
@@ -91,6 +91,6 @@ export const evidence = [
     enter: [0.62, 0.8],
     exit: null,
     desktop: { x: 50, y: 50, w: 44, depth: 0 },
-    mobile: { x: 50, y: 50, w: 92, depth: 0 },
+    mobile: { x: 50, y: 78, w: 86, depth: -3 },
   },
 ];

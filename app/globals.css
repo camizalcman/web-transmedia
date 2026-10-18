@@ -103,7 +103,6 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 /* Evidencias: escenario fijo que avanza con el scroll (--p de 0 a 1) */
 .evidence-scroll { position: relative; height: 560svh; }
 .evidence-stage { --p: 0; position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(circle at 50% 45%, rgba(125,31,44,.2), transparent 55%), linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
-.evidence-stage::before { content: ""; position: absolute; z-index: 13; left: 0; right: 0; bottom: 0; height: 45%; pointer-events: none; background: linear-gradient(transparent, rgba(5,7,6,.85)); }
 .evidence-stage::after { content: ""; position: absolute; z-index: 12; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.75)); }
 .evidence-grid { position: absolute; inset: -10%; opacity: .22; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 80px 80px; transform: translateY(calc(var(--p) * -6%)) scale(calc(1 + var(--p) * .1)); }
 .evidence-hud { position: absolute; z-index: 16; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding: 20px 28px; color: var(--muted); font-size: 10px; letter-spacing: .13em; }
