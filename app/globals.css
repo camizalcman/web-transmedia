@@ -228,22 +228,149 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .phone-webgl { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; }
 .phone-screen { overflow: hidden; border-radius: 34px; backface-visibility: hidden; cursor: auto; }
 
-/* Interfaz de prueba dentro del celular (base de la futura simulación de WhatsApp) */
-.wa { display: flex; flex-direction: column; height: 100%; background: #0b141a; color: #e9edef; font: 15px/1.35 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
-.wa-status { display: flex; justify-content: space-between; padding: 14px 30px 8px; font-size: 14px; font-weight: 600; }
-.wa-header { display: flex; align-items: center; gap: 10px; padding: 8px 14px 10px 6px; background: #1f2c34; }
-.wa-header strong { display: block; font-size: 16px; }
-.wa-header small { color: #8696a0; font-size: 12px; }
-.wa-back { border: 0; padding: 0 4px; background: none; color: #e9edef; font-size: 32px; line-height: 1; cursor: pointer; }
-.wa-avatar { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; background: #6b7c85; font-weight: 700; }
-.wa-messages { display: flex; flex: 1; flex-direction: column; gap: 6px; margin: 0; padding: 14px 12px; overflow-y: auto; list-style: none; background: #0b141a radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px) 0 0 / 18px 18px; }
-.wa-bubble { max-width: 78%; padding: 7px 10px 6px; border-radius: 9px; overflow-wrap: anywhere; }
-.wa-bubble time { margin-left: 10px; float: right; margin-top: 6px; color: rgba(233,237,239,.6); font-size: 11px; }
-.wa-bubble--them { align-self: flex-start; background: #1f2c34; border-top-left-radius: 2px; }
-.wa-bubble--me { align-self: flex-end; background: #005c4b; border-top-right-radius: 2px; }
-.wa-composer { display: flex; gap: 8px; padding: 8px 10px 28px; background: #0b141a; }
-.wa-composer input { flex: 1; min-width: 0; border: 0; border-radius: 22px; padding: 11px 16px; background: #1f2c34; color: #e9edef; font: inherit; outline: none; }
-.wa-composer button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #00a884; color: #0b141a; font-size: 18px; cursor: pointer; }
+/* Sistema del celular (iOS). La pantalla mide 390 px de ancho a escala real. */
+.ios { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; color: #fff; font-family: -apple-system, "SF Pro Text", "Segoe UI", "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; user-select: none; }
+.ios button { border: 0; padding: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+.ios svg { display: block; }
+.ios-wallpaper { position: absolute; inset: 0; width: 100%; height: 100%; transition: filter .4s ease, transform .4s ease; }
+.ios-wallpaper.is-dimmed { filter: blur(6px) brightness(.55); transform: scale(1.08); }
+
+.ios-status { position: absolute; z-index: 5; top: 0; left: 0; right: 0; height: 48px; display: flex; align-items: center; justify-content: space-between; padding: 4px 26px 0 34px; font-size: 17px; font-weight: 600; pointer-events: none; }
+.ios-status-time { width: 64px; text-align: center; }
+.ios-status-icons { display: flex; align-items: center; gap: 6px; }
+.ios-status-icons svg:nth-child(1) { width: 18px; }
+.ios-status-icons svg:nth-child(2) { width: 16px; }
+.ios-status-icons svg:nth-child(3) { width: 26px; }
+
+.ios-home-bar { position: absolute; z-index: 6; bottom: 8px; left: 50%; width: 136px; height: 5px; border-radius: 3px; background: #fff; transform: translateX(-50%); }
+.ios .ios-home-bar--button { bottom: 0; width: 170px; height: 26px; background: transparent; }
+.ios-home-bar--button::after { content: ""; position: absolute; left: 17px; right: 17px; bottom: 8px; height: 5px; border-radius: 3px; background: #fff; }
+
+/* Pantalla de bloqueo y código */
+.ios-lock { position: absolute; inset: 0; }
+.ios-lock.is-unlocking { animation: ios-unlock .55s ease forwards; }
+.ios-lock-face { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 60px; cursor: pointer; touch-action: none; }
+.ios-lock-icon { width: 18px; color: #fff; }
+.ios-lock-time { margin: 12px 0 0; font-size: 96px; font-weight: 600; line-height: 1; letter-spacing: -2px; text-shadow: 0 2px 18px rgba(0,0,0,.35); }
+.ios-lock-date { margin: 10px 0 0; font-size: 21px; font-weight: 500; opacity: .85; }
+.ios .ios-lock-hint { position: absolute; bottom: 38px; left: 0; right: 0; font-size: 15px; opacity: .7; animation: ios-hint 2.4s ease-in-out infinite; }
+
+.ios-passcode { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; align-items: center; padding-top: 72px; animation: ios-fade .25s ease; }
+.ios-passcode-title { margin: 14px 0 20px; font-size: 20px; }
+.ios-passcode-dots { display: flex; gap: 22px; }
+.ios-passcode-dots span { width: 14px; height: 14px; border: 1.5px solid #fff; border-radius: 50%; transition: background .1s; }
+.ios-passcode-dots span.is-filled { background: #fff; }
+.ios-passcode-dots.is-error { animation: ios-shake .4s ease; }
+.ios-passcode-error { height: 20px; margin: 14px 0 22px; font-size: 15px; color: rgba(255,255,255,.85); }
+.ios-keypad { display: grid; grid-template-columns: repeat(3, 78px); gap: 16px 26px; }
+.ios .ios-keypad button { width: 78px; height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,.16); transition: background .15s; }
+.ios .ios-keypad button:active { background: rgba(255,255,255,.42); }
+.ios-keypad b { font-size: 36px; font-weight: 400; line-height: 1; }
+.ios-keypad small { height: 12px; margin-top: 2px; font-size: 10px; font-weight: 700; letter-spacing: 2px; }
+.ios .ios-passcode-action { position: absolute; right: 50px; bottom: 46px; font-size: 17px; }
+
+/* Pantalla de inicio */
+.ios-home { position: absolute; inset: 0; animation: ios-zoom-in .45s ease; }
+.ios-home-grid { position: absolute; top: 70px; left: 20px; right: 20px; display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 22px; justify-items: center; }
+.ios-app { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 78px; }
+.ios-app small { font-size: 12px; white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.ios-app-icon { width: 62px; height: 62px; display: grid; place-items: center; border-radius: 15px; color: #fff; font: 30px "Segoe UI Symbol", -apple-system, sans-serif; font-variant-emoji: text; box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.ios-app-icon svg { width: 40px; }
+.ios-app-icon--facetime, .ios-app-icon--phone, .ios-app-icon--messages { background: linear-gradient(#67e680, #22c043); }
+.ios-app-icon--whatsapp { background: linear-gradient(#5cf27d, #1fb954); }
+.ios-app-icon--calendar { display: flex; flex-direction: column; justify-content: center; gap: 1px; background: #fff; color: #111; font: 600 30px/1 -apple-system, "Segoe UI", sans-serif; }
+.ios-app-icon--calendar em { color: #f2453d; font-size: 10px; font-style: normal; letter-spacing: .5px; text-transform: uppercase; }
+.ios-app-icon--photos { background: #fff; color: #f0a43a; }
+.ios-app-icon--camera { background: linear-gradient(#dcdce0, #9b9ba1); color: #2b2b2e; }
+.ios-app-icon--clock { background: #111; outline: 1px solid #333; }
+.ios-app-icon--notes { background: linear-gradient(#fff 0 24%, #fdf3c8 24%); color: #d9a600; }
+.ios-app-icon--maps { background: linear-gradient(135deg, #8ad57f, #f4e6a2 50%, #8fc3f4); color: #2f7cf6; }
+.ios-app-icon--settings { background: linear-gradient(#a5aab2, #6e737b); color: #ececef; }
+.ios-app-icon--safari { background: linear-gradient(#fff, #e3e3e8); color: #1b84f7; }
+.ios-app-icon--music { background: linear-gradient(#fb5c74, #f9233b); }
+.ios-home-search { position: absolute; bottom: 136px; left: 50%; padding: 6px 14px; border-radius: 14px; background: rgba(255,255,255,.18); font-size: 13px; font-weight: 500; transform: translateX(-50%); }
+.ios-dock { position: absolute; left: 12px; right: 12px; bottom: 24px; height: 96px; display: flex; align-items: center; justify-content: space-around; border-radius: 34px; background: rgba(255,255,255,.16); }
+.ios-dock .ios-app small { display: none; }
+
+/* WhatsApp para iOS (modo oscuro) */
+.wa { position: absolute; inset: 0; display: flex; flex-direction: column; background: #000; animation: ios-zoom-in .35s ease; }
+.wa-icon { display: grid; place-items: center; width: 30px; height: 30px; flex: none; color: #fff; }
+.wa-icon svg { width: 22px; }
+.wa-icon--round { border-radius: 50%; background: #1c1c1e; }
+.wa-icon--round svg { width: 15px; }
+.wa-icon--green { border-radius: 50%; background: #25d366; color: #000; }
+.wa-icon--green svg { width: 14px; }
+
+.wa-list { display: flex; flex: 1; flex-direction: column; min-height: 0; padding-top: 50px; overflow: hidden; }
+.wa-list-actions { display: flex; align-items: center; justify-content: space-between; height: 44px; padding: 0 16px; }
+.wa-list-actions > span { display: flex; gap: 16px; }
+.wa-list-title { margin: 2px 16px 10px; font-size: 34px; font-weight: 700; line-height: 1.15; }
+.wa-search { display: flex; align-items: center; gap: 7px; height: 38px; margin: 0 16px 12px; padding: 0 10px; border-radius: 11px; background: #1c1c1e; color: #8e8e93; font-size: 17px; }
+.wa-search svg { width: 16px; }
+.wa-filters { display: flex; gap: 8px; padding: 0 16px 6px; }
+.wa-filters span { padding: 7px 13px; border-radius: 18px; background: #1c1c1e; color: #8e8e93; font-size: 15px; font-weight: 500; white-space: nowrap; }
+.wa-filters span.is-active { background: #0c3b29; color: #25d366; }
+.wa-rows { margin: 0; padding: 0; list-style: none; }
+.ios .wa-row { display: flex; align-items: flex-start; gap: 12px; width: 100%; padding: 10px 16px 0; text-align: left; }
+.ios .wa-row:active { background: #1c1c1e; }
+.wa-avatar { display: grid; place-items: center; flex: none; border-radius: 50%; color: #fff; font-weight: 600; }
+.wa-avatar--lg { width: 54px; height: 54px; font-size: 22px; }
+.wa-avatar--lg svg { width: 36px; color: rgba(255,255,255,.85); }
+.wa-avatar--sm { width: 36px; height: 36px; font-size: 15px; }
+.wa-avatar--sm svg { width: 24px; color: rgba(255,255,255,.85); }
+.wa-row-body { flex: 1; min-width: 0; padding-bottom: 12px; border-bottom: .5px solid #2a2a2c; }
+.wa-row-top { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.wa-row-top strong { overflow: hidden; font-size: 17px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.wa-row-top time { flex: none; color: #8e8e93; font-size: 15px; }
+.wa-row-top time.is-unread { color: #25d366; }
+.wa-row-bottom { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-top: 3px; }
+.wa-row-preview { display: -webkit-box; overflow: hidden; color: #8e8e93; font-size: 15px; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.wa-row-preview .wa-tick { display: inline-block; margin-right: 3px; vertical-align: -1px; }
+.wa-row-preview .wa-tick--sent { color: #8e8e93; }
+.wa-badge { display: grid; place-items: center; flex: none; min-width: 21px; height: 21px; margin-top: 3px; padding: 0 6px; border-radius: 11px; background: #25d366; color: #000; font-size: 13px; font-weight: 600; }
+.wa-pin { flex: none; width: 14px; margin-top: 4px; color: #8e8e93; }
+.wa-encrypted { margin: 18px 34px 0; color: #8e8e93; font-size: 12px; text-align: center; }
+.wa-tabs { display: flex; justify-content: space-around; margin-top: auto; padding: 7px 4px 34px; border-top: .5px solid #2a2a2c; background: #121212; }
+.wa-tabs > span { display: flex; flex-direction: column; align-items: center; gap: 3px; width: 74px; color: #8e8e93; font-size: 10.5px; }
+.wa-tabs svg { width: 26px; height: 26px; }
+.wa-tabs .is-active { color: #fff; }
+.wa-tabs i { position: relative; font-style: normal; }
+.wa-tabs i .wa-badge { position: absolute; top: -4px; right: -12px; min-width: 18px; height: 18px; margin: 0; font-size: 11px; }
+
+.wa-chat { display: flex; flex: 1; flex-direction: column; min-height: 0; animation: wa-push .3s ease; }
+.wa-chat-header { display: flex; align-items: center; gap: 8px; padding: 50px 12px 8px 6px; border-bottom: .5px solid #2a2a2c; background: #121212; }
+.ios .wa-back { display: grid; place-items: center; width: 30px; height: 38px; }
+.wa-back svg { width: 12px; }
+.wa-chat-title { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.wa-chat-title strong, .wa-chat-title small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wa-chat-title strong { font-size: 17px; font-weight: 600; }
+.wa-chat-title small { color: #8e8e93; font-size: 12.5px; }
+.wa-chat-header .wa-icon svg { width: 24px; }
+.wa-messages { display: flex; flex: 1; flex-direction: column; gap: 2px; min-height: 0; margin: 0; padding: 8px 10px 12px; overflow-y: auto; overscroll-behavior: contain; list-style: none; scrollbar-width: none; background: #0b0b0b radial-gradient(rgba(255,255,255,.04) 1.2px, transparent 1.2px) 0 0 / 22px 22px; }
+.wa-messages::-webkit-scrollbar { display: none; }
+.wa-day { align-self: center; margin: 4px 0 8px; padding: 4px 12px; border-radius: 8px; background: #1d1d1f; color: #a1a1a6; font-size: 13px; font-weight: 500; }
+.wa-bubble { position: relative; max-width: 80%; padding: 6px 9px 7px 11px; border-radius: 16px; font-size: 16.5px; line-height: 1.3; overflow-wrap: anywhere; user-select: text; }
+.wa-bubble.is-first { margin-top: 6px; }
+.wa-bubble--in { align-self: flex-start; background: #262628; }
+.wa-bubble--in.is-first { border-top-left-radius: 5px; }
+.wa-bubble--out { align-self: flex-end; background: #144d37; }
+.wa-bubble--out.is-first { border-top-right-radius: 5px; }
+.wa-sender { display: block; margin-bottom: 1px; color: #f07fbd; font-size: 13.5px; font-weight: 600; }
+.wa-meta { display: inline-flex; float: right; align-items: center; gap: 3px; margin: 8px 0 -4px 10px; color: rgba(255,255,255,.55); font-size: 11.5px; }
+.wa-tick { width: 16px; height: 11px; }
+.wa-tick--sent { width: 11px; color: rgba(255,255,255,.55); }
+.wa-tick--read { color: #53bdeb; }
+.wa-composer { display: flex; align-items: center; gap: 12px; padding: 8px 12px 36px; border-top: .5px solid #2a2a2c; background: #121212; }
+.wa-composer-field { display: flex; flex: 1; align-items: center; justify-content: flex-end; height: 36px; padding: 0 10px; border: .5px solid #2c2c2e; border-radius: 18px; background: #1c1c1e; color: #8e8e93; }
+.wa-composer-field svg { width: 20px; }
+
+@keyframes ios-fade { from { opacity: 0; } }
+@keyframes ios-zoom-in { from { opacity: 0; transform: scale(.92); } }
+@keyframes ios-unlock { to { opacity: 0; transform: scale(1.1); } }
+@keyframes ios-shake { 20% { transform: translateX(-12px); } 40% { transform: translateX(12px); } 60% { transform: translateX(-8px); } 80% { transform: translateX(8px); } }
+@keyframes ios-hint { 50% { opacity: .35; } }
+@keyframes wa-push { from { transform: translateX(100%); } }
+
 .phone-scroll { position: relative; height: 260svh; }
 .phone-scroll-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(circle at 50% 50%, rgba(214,31,38,.12), transparent 50%), linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
 .phone-status { position: absolute; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
