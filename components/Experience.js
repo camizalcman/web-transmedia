@@ -106,7 +106,7 @@ export default function Experience({ initialChapterId }) {
 
       <header className="topbar">
         <button className="brand" onClick={returnToStart}>
-          S/88 <i>●</i>
+          S/P <i>●</i>
         </button>
         <div className="status">
           <span>{syncState === "cloud" ? "NUBE" : "LOCAL"}</span>

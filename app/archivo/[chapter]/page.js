@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   if (!chapter) return {};
 
   return {
-    title: `${chapter.label} — SEÑAL 88`,
+    title: `${chapter.label} — Señal perdida`,
     description: chapter.copy,
   };
 }
