@@ -1,6 +1,6 @@
 import { PHONE_DATE } from "@/data/conversations";
 import { WhatsAppGlyph } from "@/components/phone/icons";
-import { HomeBar, SchoolWallpaper, StatusBar } from "@/components/phone/System";
+import { HomeBar, StatusBar, Wallpaper } from "@/components/phone/System";
 
 // El icono de Calendario muestra el día de la fecha del celular.
 const [weekday, dayAndMonth] = PHONE_DATE.split(", ");
@@ -36,7 +36,7 @@ function AppIcon({ app }) {
 export default function HomeScreen({ onOpenWhatsApp }) {
   return (
     <div className="ios-home">
-      <SchoolWallpaper dimmed />
+      <Wallpaper mode="home" />
       <StatusBar />
 
       <div className="ios-home-grid">

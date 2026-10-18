@@ -2,7 +2,7 @@
 export const PHONE_TIME = "22:18";
 export const PHONE_DATE = "jueves, 13 de junio";
 export const PHONE_PASSCODE = "221507";
-export const LOCK_WALLPAPER = "/img/fondo.jpg";
+export const PHONE_WALLPAPER = "/img/fondo.jpg";
 
 // Conversaciones de WhatsApp, en el orden en que aparecen en la lista.
 //
