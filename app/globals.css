@@ -217,6 +217,17 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .auth-current span { margin-bottom: 16px; color: #707870; font: 12px Arial, sans-serif; }
 .auth-current button { border-color: #404841; background: transparent; color: var(--ink); }
 
+/* Celular 3D: el canvas es transparente y toma el fondo de la página */
+.phone-page { position: relative; min-height: 100svh; background: radial-gradient(circle at 50% 50%, rgba(214,31,38,.12), transparent 50%), linear-gradient(115deg, #0c100d, #030403 68%); }
+.phone-hint { position: absolute; z-index: 2; left: 0; right: 0; bottom: 28px; margin: 0; color: var(--muted); font-size: 9px; letter-spacing: .2em; text-align: center; pointer-events: none; }
+.phone-stage { position: relative; height: 100svh; }
+.phone-canvas { width: 100%; height: 100%; cursor: grab; }
+.phone-canvas:active { cursor: grabbing; }
+.phone-canvas canvas { display: block; width: 100%; height: 100%; }
+.phone-scroll { position: relative; height: 260svh; }
+.phone-scroll-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: radial-gradient(circle at 50% 50%, rgba(214,31,38,.12), transparent 50%), linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
+.phone-status { position: absolute; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
+
 @media (max-width: 900px) {
   .chapter-layout { grid-template-columns: 1fr; padding-inline: 18px; overflow-y: auto; }
   .chapter-nav { display: flex; align-self: start; border-left: 0; padding-top: 10px; }
