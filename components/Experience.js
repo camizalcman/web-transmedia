@@ -13,7 +13,6 @@ export default function Experience({ initialChapterId }) {
     chapters.findIndex((item) => item.id === initialChapterId),
     0,
   );
-  const entered = Boolean(initialChapterId);
   const [flash, setFlash] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [completionOpen, setCompletionOpen] = useState(false);
@@ -58,10 +57,6 @@ export default function Experience({ initialChapterId }) {
     return index === 0 || discovered.has(chapters[index - 1].clueId);
   }
 
-  function enterExperience() {
-    router.push(`/archivo/${chapters[0].id}`);
-  }
-
   function openChapter(chapterId) {
     router.push(`/archivo/${chapterId}`);
   }
@@ -85,24 +80,6 @@ export default function Experience({ initialChapterId }) {
     <main className={`experience ${flash ? "is-flashing" : ""}`}>
       <div className="noise" aria-hidden="true" />
       <div className="scanlines" aria-hidden="true" />
-
-      {!entered && (
-        <section className="intro">
-          <p className="kicker">ARCHIVO NO AUTORIZADO / EXP. 06</p>
-          <h1>
-            SEÑAL <span>88</span>
-          </h1>
-          <p className="intro-copy">
-            Una transmisión apareció donde no debía. Tres fragmentos siguen
-            activos. Entrar altera el archivo.
-          </p>
-          <button className="enter-button" onClick={enterExperience}>
-            <span>INICIAR RECEPCIÓN</span>
-            <span aria-hidden="true">↗</span>
-          </button>
-          <p className="microcopy">Usá auriculares. O fingí que este mensaje los recomendaba.</p>
-        </section>
-      )}
 
       <header className="topbar">
         <button className="brand" onClick={returnToStart}>

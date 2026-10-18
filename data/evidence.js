@@ -1,0 +1,145 @@
+// Video del noticiero que abre la experiencia. Por defecto se sirve desde
+// /public; para usar una URL publica (CDN, Firebase Storage, etc.) definir
+// NEXT_PUBLIC_INTRO_VIDEO_URL en .env.local.
+export const INTRO_VIDEO_SRC =
+  process.env.NEXT_PUBLIC_INTRO_VIDEO_URL || "/video-inicial.mp4";
+
+// Evidencias que ingresan en escena durante el scroll.
+//
+// Para reemplazar un placeholder por la fotografia definitiva, copiar la
+// imagen a /public/evidencias/ y completar `image` con su ruta, por ejemplo:
+//   image: "/evidencias/ultima-foto.jpg"
+// Mientras `image` sea null se muestra un bloque del color indicado.
+//
+// - enter: tramo del scroll (0 a 1) en el que la evidencia entra en escena.
+// - exit:  punto desde el que retrocede para dejar lugar a las siguientes.
+// - effect: "left" | "right" | "focus" | "mask" | "iris" | "drop".
+// - desktop / mobile: centro (x, y en %), ancho (w) y profundidad de parallax.
+export const evidence = [
+  {
+    id: "ev-01",
+    label: "ÚLTIMA FOTO CONOCIDA",
+    meta: "14/06 — 19:52",
+    image: null,
+    color: "#7d1f2c",
+    ratio: "4 / 5",
+    rotate: -2,
+    effect: "focus",
+    enter: [0.03, 0.14],
+    exit: 0.3,
+    desktop: { x: 50, y: 47, w: 24, depth: -6 },
+    mobile: { x: 50, y: 42, w: 66, depth: -4 },
+  },
+  {
+    id: "ev-02",
+    label: "CÁMARA DE SEGURIDAD",
+    meta: "CAM 04 — 21:13",
+    image: null,
+    color: "#1f4e5f",
+    ratio: "16 / 9",
+    rotate: -6,
+    effect: "left",
+    enter: [0.1, 0.2],
+    exit: 0.7,
+    desktop: { x: 21, y: 30, w: 24, depth: -10 },
+    mobile: { x: 34, y: 22, w: 62, depth: -6 },
+  },
+  {
+    id: "ev-03",
+    label: "NOTA MANUSCRITA",
+    meta: "HALLADA EN EL ABRIGO",
+    image: null,
+    color: "#6b5b2e",
+    ratio: "3 / 4",
+    rotate: 5,
+    effect: "right",
+    enter: [0.17, 0.27],
+    exit: 0.7,
+    desktop: { x: 79, y: 36, w: 18, depth: -14 },
+    mobile: { x: 72, y: 38, w: 44, depth: -8 },
+  },
+  {
+    id: "ev-04",
+    label: "REGISTRO DE LLAMADAS",
+    meta: "3 LLAMADAS SIN RESPUESTA",
+    image: null,
+    color: "#3d2a5c",
+    ratio: "16 / 9",
+    rotate: 2,
+    effect: "mask",
+    enter: [0.25, 0.37],
+    exit: 0.7,
+    desktop: { x: 33, y: 72, w: 25, depth: -4 },
+    mobile: { x: 40, y: 62, w: 66, depth: -3 },
+  },
+  {
+    id: "ev-05",
+    label: "OBJETO PERSONAL",
+    meta: "BOLSA N.º 5",
+    image: null,
+    color: "#2f5d3a",
+    ratio: "1 / 1",
+    rotate: -9,
+    effect: "drop",
+    enter: [0.33, 0.44],
+    exit: 0.7,
+    desktop: { x: 64, y: 70, w: 15, depth: -12 },
+    mobile: { x: 74, y: 57, w: 40, depth: -7 },
+  },
+  {
+    id: "ev-06",
+    label: "TICKET DE COLECTIVO",
+    meta: "LÍNEA 60 — 22:41",
+    image: null,
+    color: "#7a3b12",
+    ratio: "3 / 4",
+    rotate: 7,
+    effect: "left",
+    enter: [0.42, 0.52],
+    exit: 0.7,
+    desktop: { x: 12, y: 70, w: 15, depth: -8 },
+    mobile: { x: 26, y: 80, w: 42, depth: -5 },
+  },
+  {
+    id: "ev-07",
+    label: "MAPA DEL RECORRIDO",
+    meta: "ÚLTIMA UBICACIÓN",
+    image: null,
+    color: "#12325a",
+    ratio: "4 / 3",
+    rotate: -3,
+    effect: "iris",
+    enter: [0.49, 0.61],
+    exit: 0.7,
+    desktop: { x: 56, y: 24, w: 21, depth: -16 },
+    mobile: { x: 62, y: 18, w: 54, depth: -9 },
+  },
+  {
+    id: "ev-08",
+    label: "TESTIMONIO",
+    meta: "VECINA — CINTA 2",
+    image: null,
+    color: "#5c1a4a",
+    ratio: "4 / 5",
+    rotate: -4,
+    effect: "right",
+    enter: [0.57, 0.68],
+    exit: 0.7,
+    desktop: { x: 87, y: 76, w: 15, depth: -6 },
+    mobile: { x: 72, y: 82, w: 42, depth: -4 },
+  },
+  {
+    id: "ev-09",
+    label: "FOTOGRAMA DEL NOTICIERO",
+    meta: "NO DEBERÍA ESTAR AHÍ",
+    image: null,
+    color: "#8a8f85",
+    ratio: "16 / 9",
+    rotate: 0,
+    effect: "focus",
+    enter: [0.7, 0.84],
+    exit: null,
+    desktop: { x: 50, y: 50, w: 40, depth: 0 },
+    mobile: { x: 50, y: 48, w: 86, depth: 0 },
+  },
+];
