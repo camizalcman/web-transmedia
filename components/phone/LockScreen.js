@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { PHONE_DATE, PHONE_PASSCODE, PHONE_TIME } from "@/data/conversations";
 import { LockIcon } from "@/components/phone/icons";
-import { HomeBar, SchoolWallpaper, StatusBar } from "@/components/phone/System";
+import { HomeBar, LockWallpaper, StatusBar } from "@/components/phone/System";
 
 const KEYS = [
   ["1", ""], ["2", "ABC"], ["3", "DEF"],
@@ -64,7 +64,7 @@ export default function LockScreen({ onUnlock }) {
 
   return (
     <div className={`ios-lock ${mode === "code" ? "is-code" : ""} ${unlocking ? "is-unlocking" : ""}`}>
-      <SchoolWallpaper dimmed={mode === "code"} />
+      <LockWallpaper dimmed={mode === "code"} />
       <StatusBar hideTime />
 
       {mode === "locked" ? (

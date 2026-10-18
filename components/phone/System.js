@@ -1,4 +1,5 @@
-import { PHONE_TIME } from "@/data/conversations";
+import Image from "next/image";
+import { LOCK_WALLPAPER, PHONE_TIME } from "@/data/conversations";
 import { BatteryIcon, SignalIcon, WifiIcon } from "@/components/phone/icons";
 
 // Barra de estado de iOS, repartida a los costados del notch.
@@ -23,7 +24,17 @@ export function HomeBar({ onHome }) {
   );
 }
 
-// Fondo de pantalla: el edificio del colegio de noche.
+// Fondo de la pantalla bloqueada: la foto de /public/img. next/image entrega
+// una versión reducida al tamaño de la pantalla del celular.
+export function LockWallpaper({ dimmed = false }) {
+  return (
+    <div className={`ios-wallpaper ios-wallpaper--photo ${dimmed ? "is-dimmed" : ""}`} aria-hidden="true">
+      <Image src={LOCK_WALLPAPER} alt="" fill sizes="390px" priority />
+    </div>
+  );
+}
+
+// Fondo de la pantalla de inicio: el edificio del colegio de noche.
 export function SchoolWallpaper({ dimmed = false }) {
   const windows = [];
   for (let row = 0; row < 4; row += 1) {
