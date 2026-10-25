@@ -9,7 +9,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { CSS3DObject, CSS3DRenderer } from "three/addons/renderers/CSS3DRenderer.js";
 import PhoneScreen from "@/components/PhoneScreen";
 
-const MODEL_URL = "/models/apple_iphone_13_pro_max.glb";
+export const MODEL_URL = "/models/apple_iphone_13_pro_max.glb";
 // Ancho en px CSS con el que se maqueta la interfaz de la pantalla.
 const SCREEN_CSS_WIDTH = 390;
 
@@ -246,7 +246,7 @@ function disposeMaterial(material) {
   material.dispose();
 }
 
-function disposeObject(object) {
+export function disposeObject(object) {
   object.traverse((child) => {
     if (!child.isMesh) return;
     child.geometry.dispose();

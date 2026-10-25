@@ -227,6 +227,35 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 /* El HTML de la pantalla va debajo; el canvas WebGL encima, sin recibir eventos. */
 .phone-css-layer { position: absolute; inset: 0; z-index: 0; }
 .phone-webgl { position: absolute; inset: 0; z-index: 1; display: block; width: 100%; height: 100%; pointer-events: none; }
+/* Lockers: escena a pantalla completa; el celular se abre encima. */
+.locker-page { position: relative; height: 100svh; overflow: hidden; background: #050605; }
+.locker-stage { position: relative; height: 100%; }
+.locker-page .phone-hint { top: 24px; bottom: auto; }
+.locker-canvas { width: 100%; height: 100%; touch-action: none; }
+.locker-webgl { display: block; width: 100%; height: 100%; cursor: grab; }
+.locker-credit { position: absolute; z-index: 2; left: 16px; right: 16px; text-align: right; bottom: 10px; margin: 0; color: var(--muted); font-size: 8px; letter-spacing: .08em; opacity: .6; pointer-events: none; }
+/* Panel del codigo del candado: abajo, sin tapar el candado. */
+.lock-panel { position: absolute; z-index: 10; left: 50%; bottom: 24px; transform: translateX(-50%); width: min(320px, calc(100% - 32px)); padding: 18px 18px 16px; border: 1px solid var(--line); background: rgba(5,6,5,.82); backdrop-filter: blur(6px); text-align: center; }
+.lock-panel.is-error { border-color: var(--red); animation: lock-shake .45s ease; }
+.lock-panel.is-open { border-color: #6fd38a; }
+.lock-title { margin: 0 0 12px; color: var(--muted); font-size: 10px; letter-spacing: .2em; }
+.lock-panel.is-error .lock-title { color: var(--red); }
+.lock-panel.is-open .lock-title { color: #6fd38a; }
+.lock-close { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: var(--muted); font-size: 18px; cursor: pointer; }
+.lock-close:hover { color: #fff; }
+.lock-dials { display: flex; justify-content: center; gap: 10px; }
+.lock-dial { display: grid; width: 58px; border: 1px solid var(--line); }
+.lock-dial.is-active { border-color: rgba(233,236,223,.55); }
+.lock-dial span { padding: 6px 0; color: #fff; font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+.lock-dial button { border: 0; padding: 6px 0; background: none; color: var(--muted); font-size: 11px; cursor: pointer; }
+.lock-dial button:hover:not(:disabled) { color: #fff; }
+.lock-submit { width: 100%; margin-top: 14px; border: 1px solid var(--red); padding: 10px; background: none; color: #fff; font: inherit; font-size: 10px; letter-spacing: .2em; cursor: pointer; }
+.lock-submit:hover:not(:disabled) { background: var(--red); }
+.lock-panel button:disabled { opacity: .35; cursor: default; }
+@keyframes lock-shake { 20%, 60% { transform: translateX(calc(-50% - 6px)); } 40%, 80% { transform: translateX(calc(-50% + 6px)); } }
+.locker-phone { position: fixed; z-index: 20; inset: 0; background: linear-gradient(115deg, #0c100d, #030403 68%); }
+.locker-back { position: absolute; z-index: 3; top: 18px; left: 16px; border: 1px solid var(--line); padding: 10px 14px; background: rgba(0,0,0,.4); color: var(--muted); font: inherit; font-size: 10px; letter-spacing: .16em; cursor: pointer; }
+.locker-back:hover { color: #fff; border-color: var(--red); }
 .phone-screen { overflow: hidden; border-radius: 34px; backface-visibility: hidden; cursor: auto; }
 
 /* Sistema del celular (iOS). La pantalla mide 390 px de ancho a escala real. */
