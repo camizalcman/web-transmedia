@@ -231,6 +231,9 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .locker-page { position: relative; height: 100svh; overflow: hidden; background: #050605; }
 .locker-stage { position: relative; height: 100%; }
 .locker-page .phone-hint { top: 24px; bottom: auto; }
+/* Lockers dentro del recorrido de la portada (sin la textura de rayas encima). */
+.locker-scroll { position: relative; z-index: 21; height: 200svh; }
+.locker-scroll-stage { position: sticky; top: 0; }
 .locker-canvas { width: 100%; height: 100%; touch-action: none; }
 .locker-webgl { display: block; width: 100%; height: 100%; cursor: grab; }
 .locker-credit { position: absolute; z-index: 2; left: 16px; right: 16px; text-align: right; bottom: 10px; margin: 0; color: var(--muted); font-size: 8px; letter-spacing: .08em; opacity: .6; pointer-events: none; }
@@ -409,6 +412,57 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .phone-scroll { position: relative; z-index: 21; height: 260svh; }
 .phone-scroll-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: linear-gradient(180deg, var(--black), #0a0d0b 55%, var(--black)); }
 .phone-status { position: absolute; z-index: 2; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
+
+/* Colegio en la dimension paralela. Queda debajo de .noise y .scanlines: el
+   grano suma a la atmosfera. */
+.school-scroll { position: relative; height: 200svh; }
+/* En la realidad la seccion queda por encima de .noise y .scanlines: sin rayas. */
+.school-scroll.is-normal { z-index: 21; }
+.school-stage { position: sticky; top: 0; height: 100svh; overflow: hidden; background: #050101; }
+.school-canvas { position: absolute; inset: 0; }
+/* El dedo sigue scrolleando la pagina (el gesto horizontal mira); mientras
+   se dibuja, el pizarron se queda con todo el gesto. */
+.school-webgl { display: block; width: 100%; height: 100%; touch-action: pan-y; }
+.school-stage.is-active .school-webgl { cursor: grab; }
+.school-stage.is-active .school-webgl:active { cursor: grabbing; }
+.school-stage.is-drawing .school-webgl { touch-action: none; }
+/* Borde superior en degrade: empalma con el final de la seccion anterior. */
+.school-stage::before { content: ""; position: absolute; z-index: 2; top: 0; left: 0; right: 0; height: 18svh; background: linear-gradient(#050605, transparent); pointer-events: none; }
+.school-credit { position: absolute; z-index: 3; left: 16px; right: 16px; bottom: 10px; margin: 0; color: rgba(233,200,195,.45); font-size: 8px; letter-spacing: .08em; text-align: right; pointer-events: none; }
+/* Contraste cinematografico: bordes oscuros y rojizos (se van con la luz normal). */
+.school-vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 50%, transparent 38%, rgba(25,0,0,.55) 78%, rgba(0,0,0,.92)); transition: opacity 2.5s ease; }
+.school-stage.is-normal .school-vignette { opacity: 0; }
+.school-fade { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle, #1a0000, #000 70%); opacity: 1; transition: opacity .6s ease; }
+.school-hud { position: absolute; z-index: 3; top: 18px; left: 16px; right: 16px; color: #d9b9b4; font-size: 10px; letter-spacing: .18em; pointer-events: none; }
+.school-hud i { color: var(--red); font-style: normal; animation: school-blink 1.6s steps(2) infinite; }
+.school-stage.is-normal .school-hud { color: var(--ink); }
+.school-loading { position: absolute; z-index: 3; inset: 0; display: grid; place-content: center; margin: 0; color: var(--red); font-size: 10px; letter-spacing: .18em; pointer-events: none; }
+/* Flechas del teclado dibujadas (sin texto), hasta el primer paso. */
+.school-keys { position: absolute; z-index: 3; left: 50%; bottom: 13svh; display: grid; grid-template-columns: repeat(3, 34px); grid-template-rows: repeat(2, 34px); gap: 5px; transform: translateX(-50%); pointer-events: none; animation: school-keys 2.4s ease-in-out infinite; }
+.school-keys span { display: grid; place-content: center; border: 1px solid rgba(255,255,255,.45); border-radius: 5px; background: rgba(0,0,0,.55); color: #fff; font-size: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.school-keys span:nth-child(1) { grid-column: 2; grid-row: 1; }
+.school-keys span:nth-child(2) { grid-column: 1; grid-row: 2; }
+.school-keys span:nth-child(3) { grid-column: 2; grid-row: 2; }
+.school-keys span:nth-child(4) { grid-column: 3; grid-row: 2; }
+/* Botones de movimiento: solo en pantallas tactiles (ahi reemplazan al dibujo de las flechas). */
+.school-pad { position: absolute; z-index: 3; right: 16px; bottom: 56px; display: none; grid-template-columns: repeat(3, 48px); grid-template-rows: repeat(2, 48px); gap: 6px; }
+.school-pad button { border: 1px solid rgba(233,236,223,.25); background: rgba(0,0,0,.45); color: #e7c2bd; font-size: 14px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.school-pad button:nth-child(1) { grid-column: 2; grid-row: 1; }
+.school-pad button:nth-child(2) { grid-column: 1; grid-row: 2; }
+.school-pad button:nth-child(3) { grid-column: 2; grid-row: 2; }
+.school-pad button:nth-child(4) { grid-column: 3; grid-row: 2; }
+@media (pointer: coarse) {
+  .school-pad { display: grid; }
+  .school-keys { display: none; }
+}
+/* Borrador de pizarron: un dibujo, sin texto. */
+.school-eraser { position: absolute; z-index: 3; left: 50%; bottom: 22px; width: 64px; height: 40px; padding: 6px 8px; transform: translateX(-50%); border: 0; background: none; cursor: pointer; opacity: .75; transition: opacity .2s ease, transform .2s ease; }
+.school-eraser:hover { opacity: 1; transform: translateX(-50%) translateY(-2px); }
+.school-eraser svg { display: block; width: 100%; height: 100%; }
+.school-eraser rect:first-child { fill: #8a5a3b; }
+.school-eraser rect:last-child { fill: #e9e6dc; }
+@keyframes school-blink { 50% { opacity: .2; } }
+@keyframes school-keys { 50% { opacity: .45; } }
 
 @media (max-width: 900px) {
   .chapter-layout { grid-template-columns: 1fr; padding-inline: 18px; overflow-y: auto; }

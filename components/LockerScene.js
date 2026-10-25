@@ -61,6 +61,8 @@ const NOTE = { locker: 3, level: 1, height: 0.3, width: 0.15, tilt: 0.07 };
 //   Mientras `phoneOpen` es true no se renderiza.
 // - Al tocar la hoja (con las lineas de `noteLines`, escritas con la familia
 //   `handFont`) la camara se acerca para leerla; otro clic la aleja.
+// - Con `embedded` (dentro del recorrido de la portada) no hay zoom: la rueda
+//   y el gesto vertical scrollean la pagina.
 // Al cerrarse el panel o la vista del celular la camara vuelve a alejarse.
 export default function LockerScene({
   phoneOpen,
@@ -74,6 +76,7 @@ export default function LockerScene({
   onUnlockDone,
   noteLines,
   handFont,
+  embedded,
 }) {
   const mountRef = useRef(null);
   const propsRef = useRef(null);
@@ -94,6 +97,7 @@ export default function LockerScene({
       onUnlockDone,
       noteLines,
       handFont,
+      embedded,
     };
   });
 
@@ -115,6 +119,7 @@ export default function LockerScene({
     let waitingOpen = false;
     let returnView = null;
     let framedBox = null;
+    let visible = true;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(BACKGROUND);
@@ -154,6 +159,12 @@ export default function LockerScene({
     controls.maxAzimuthAngle = 0.8;
     controls.minPolarAngle = 1.0;
     controls.maxPolarAngle = 1.72;
+    // Dentro del recorrido de la portada la rueda y el gesto vertical son de
+    // la pagina: sin zoom y con el scroll tactil habilitado.
+    if (propsRef.current.embedded) {
+      controls.enableZoom = false;
+      renderer.domElement.style.touchAction = "pan-y";
+    }
 
     const wrapper = new THREE.Group();
     scene.add(wrapper);
@@ -473,6 +484,8 @@ export default function LockerScene({
       frameId = requestAnimationFrame(animate);
       timer.update(timestamp);
       const props = propsRef.current;
+      // Fuera de pantalla no se renderiza.
+      if (!visible) return;
       // Con la vista del celular abierta la escena queda congelada detras.
       if (props.phoneOpen) {
         waitingOpen = false;
@@ -498,6 +511,10 @@ export default function LockerScene({
 
     const observer = new ResizeObserver(resize);
     observer.observe(mount);
+    const visibility = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+    });
+    visibility.observe(mount);
     renderer.domElement.addEventListener("pointerdown", handleDown);
     renderer.domElement.addEventListener("pointerup", handleUp);
     renderer.domElement.addEventListener("pointermove", handleMove);
@@ -508,6 +525,7 @@ export default function LockerScene({
       disposed = true;
       cancelAnimationFrame(frameId);
       observer.disconnect();
+      visibility.disconnect();
       renderer.domElement.removeEventListener("pointerdown", handleDown);
       renderer.domElement.removeEventListener("pointerup", handleUp);
       renderer.domElement.removeEventListener("pointermove", handleMove);

@@ -1,16 +1,22 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import LockerScene from "@/components/LockerScene";
 import PhoneModel from "@/components/PhoneModel";
 import { LOCK_CLUES, LOCK_CODE } from "@/data/lockers";
+import { markStep } from "@/lib/storyProgress";
 
 const DIALS = LOCK_CODE.length;
 
 // Los lockers, el panel para ingresar el codigo del candado y, al tocar el
 // celular que esta adentro, la vista interactiva del celular a pantalla completa.
 // `handFont` es la familia de la letra manuscrita de la hoja con las pistas.
-export default function LockerRoom({ handFont }) {
+// Con `embedded` es una seccion del recorrido de la portada (antes del
+// celular): la escena se crea al acercarse, la rueda scrollea la pagina y al
+// tomar el celular se baja hasta su seccion en vez de abrirlo encima.
+export default function LockerRoom({ handFont, embedded = false }) {
+  const sectionRef = useRef(null);
+  const [near, setNear] = useState(!embedded);
   const [phoneOpen, setPhoneOpen] = useState(false);
   const [lockOpen, setLockOpen] = useState(false);
   const [digits, setDigits] = useState(() => Array(DIALS).fill(0));
@@ -18,7 +24,38 @@ export default function LockerRoom({ handFont }) {
   const [unlocked, setUnlocked] = useState(false);
   const [error, setError] = useState(false);
 
-  const openPhone = useCallback(() => setPhoneOpen(true), []);
+  useEffect(() => {
+    if (!embedded) return;
+    const proximity = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setNear(true);
+      },
+      { rootMargin: "100% 0px" },
+    );
+    proximity.observe(sectionRef.current);
+    return () => proximity.disconnect();
+  }, [embedded]);
+
+  const openPhone = useCallback(() => {
+    setPhoneOpen(true);
+    if (!embedded) return;
+    // El celular continua en la seccion siguiente, que aparece recien ahora:
+    // cuando se monta, se baja hasta donde termina de entrar. Mientras tanto
+    // la escena queda en pausa y despues la camara vuelve a su lugar.
+    markStep("phone-taken");
+    let tries = 0;
+    const scrollToPhone = () => {
+      const next = document.querySelector(".phone-scroll");
+      if (!next) {
+        if (tries++ < 60) requestAnimationFrame(scrollToPhone);
+        return;
+      }
+      const top = next.offsetTop + next.offsetHeight * 0.8 - window.innerHeight;
+      window.scrollTo({ top, behavior: "smooth" });
+    };
+    requestAnimationFrame(scrollToPhone);
+    window.setTimeout(() => setPhoneOpen(false), 1500);
+  }, [embedded]);
   const openLock = useCallback(() => setLockOpen(true), []);
   const closeLock = useCallback(() => setLockOpen(false), []);
 
@@ -51,9 +88,10 @@ export default function LockerRoom({ handFont }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [phoneOpen, lockOpen]);
 
-  return (
-    <main className="locker-page">
+  const content = (
+    <>
       <LockerScene
+        embedded={embedded}
         phoneOpen={phoneOpen}
         onPhoneSelect={openPhone}
         lockOpen={lockOpen}
@@ -66,9 +104,7 @@ export default function LockerRoom({ handFont }) {
         noteLines={LOCK_CLUES}
         handFont={handFont}
       />
-      <p className="phone-hint">
-        TOCÁ UNA PUERTA PARA ABRIRLA · ARRASTRÁ PARA MIRAR
-      </p>
+      {!embedded && <p className="phone-hint">TOCÁ UNA PUERTA PARA ABRIRLA · ARRASTRÁ PARA MIRAR</p>}
       {!lockOpen && (
         <p className="locker-credit">
           Modelos de Sketchfab (CC BY 4.0): “School Locker” por Lee Studio · “Combination Padlock” por RED2000 ·
@@ -87,7 +123,7 @@ export default function LockerRoom({ handFont }) {
         />
       )}
 
-      {phoneOpen && (
+      {phoneOpen && !embedded && (
         <section className="locker-phone" role="dialog" aria-modal="true" aria-label="Celular">
           <button className="locker-back" onClick={() => setPhoneOpen(false)}>
             ← VOLVER A LOS LOCKERS
@@ -95,7 +131,14 @@ export default function LockerRoom({ handFont }) {
           <PhoneModel />
         </section>
       )}
-    </main>
+    </>
+  );
+
+  if (!embedded) return <main className="locker-page">{content}</main>;
+  return (
+    <section ref={sectionRef} className="locker-scroll" aria-label="Lockers del colegio">
+      <div className="locker-page locker-scroll-stage">{near && content}</div>
+    </section>
   );
 }
 
