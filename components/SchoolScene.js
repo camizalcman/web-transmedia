@@ -18,6 +18,8 @@ const TURN_SPEED = 1.9;
 const LOOK_SPEED = 0.0042;
 // Alturas (sobre el piso) de los rayos que detectan paredes y muebles.
 const COLLISION_HEIGHTS = [0.3, 0.8, 1.35];
+// Luces que se reparten entre los plafones del pasillo mas cercanos.
+const LAMP_POOL = 4;
 // Tras dejar de dibujar, cuanto se espera antes de revisar el pizarron (s).
 const CHECK_DELAY = 1.3;
 // Puntero de tiza: sobre el pizarron indica que se puede dibujar.
@@ -80,10 +82,13 @@ export default function SchoolScene(props) {
     let visible = true;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
+    // Todo es estatico: las sombras se calculan una vez por escena (al
+    // cargarla o al entrar) y no en cada frame.
+    renderer.shadowMap.autoUpdate = false;
     renderer.domElement.className = "school-webgl";
     mount.append(renderer.domElement);
 
@@ -120,6 +125,7 @@ export default function SchoolScene(props) {
       (gltf) => {
         if (disposed) return disposeObject(gltf.scene);
         worlds.hallway = buildHallway(gltf.scene);
+        renderer.shadowMap.needsUpdate = true;
         call("onLoading", null);
         call("onPlace", "hallway");
         // El aula se baja en segundo plano mientras se recorre el pasillo.
@@ -190,12 +196,15 @@ export default function SchoolScene(props) {
       sun.target.position.set(60, 0, 15);
       scene.add(hemi, sun, sun.target);
 
-      const lamps = HALLWAY.lamps.map((z, index) => {
+      // Algunos plafones estan "rotos": casi apagados y titilando.
+      const lamps = HALLWAY.lamps.map((z, index) => ({ z, broken: index % 3 === 1, seed: index * 1.7 }));
+      // Cada luz cuesta en cada pixel, asi que no hay una por plafon: unas
+      // pocas se ubican en los plafones mas cercanos al jugador.
+      const lampLights = Array.from({ length: LAMP_POOL }, () => {
         const light = new THREE.PointLight(0xff2418, 1, 8, 1.6);
-        light.position.set(60.18, 2.65, z);
+        light.position.set(60.18, 2.65, 0);
         scene.add(light);
-        // Algunos plafones estan "rotos": casi apagados y titilando.
-        return { light, broken: index % 3 === 1, seed: index * 1.7 };
+        return light;
       });
       const shadowSpots = [18.32, -7.57].map((z) => {
         const spot = new THREE.SpotLight(0xff1a10, 1, 9, 1.15, 0.7, 1.4);
@@ -234,17 +243,27 @@ export default function SchoolScene(props) {
       const fogNormal = new THREE.Color(0xd5dbe0);
       const lampDim = new THREE.Color(0xff1a10);
       const lampNormal = new THREE.Color(0xfff4e5);
+      const white = new THREE.Color(0xffffff);
 
       function applyLighting(mix, time, blackout) {
         const dim = 1 - mix;
-        hemi.color.copy(lampDim).lerp(new THREE.Color(0xffffff), mix);
+        hemi.color.copy(lampDim).lerp(white, mix);
         hemi.groundColor.setRGB(0.07 * dim + 0.45 * mix, 0.0 + 0.42 * mix, 0.0 + 0.38 * mix);
         hemi.intensity = (0.42 * dim + 1.1 * mix) * blackout;
         sun.intensity = 1.6 * mix;
-        lamps.forEach(({ light, broken, seed }) => {
-          const flicker = broken ? flickerNoise(time * 7 + seed) : 0.85 + 0.15 * Math.sin(time * 1.3 + seed);
+        // Plafones ordenados por cercania. La ultima luz se apaga a medida que
+        // el siguiente plafon se acerca, asi el cambio no se nota.
+        const nearest = lamps
+          .map((lamp) => ({ lamp, distance: Math.abs(lamp.z - player.z) }))
+          .sort((a, b) => a.distance - b.distance);
+        const cutoff = nearest[LAMP_POOL]?.distance ?? Infinity;
+        lampLights.forEach((light, index) => {
+          const { lamp, distance } = nearest[index];
+          const flicker = lamp.broken ? flickerNoise(time * 7 + lamp.seed) : 0.85 + 0.15 * Math.sin(time * 1.3 + lamp.seed);
+          const fade = THREE.MathUtils.clamp((cutoff - distance) / 2.5, 0, 1);
+          light.position.z = lamp.z;
           light.color.copy(lampDim).lerp(lampNormal, mix);
-          light.intensity = (3.6 * flicker * dim + 5 * mix) * blackout;
+          light.intensity = (3.6 * flicker * dim + 5 * mix) * blackout * fade;
         });
         shadowSpots.forEach((spot) => {
           spot.color.copy(lampDim).lerp(lampNormal, mix);
@@ -268,7 +287,7 @@ export default function SchoolScene(props) {
       return {
         name: "hallway",
         scene,
-        colliders,
+        colliders: withBounds(colliders),
         doorMeshes,
         floorY: 0,
         bounds: HALLWAY.bounds,
@@ -339,10 +358,11 @@ export default function SchoolScene(props) {
       const normalColor = new THREE.Color(0xfff6ea);
       const fogDim = new THREE.Color(0x140203);
       const fogNormal = new THREE.Color(0xe6e0d6);
+      const hemiNormal = new THREE.Color(0xfffaf0);
 
       function applyLighting(mix, time, blackout) {
         const dim = 1 - mix;
-        hemi.color.copy(dimColor).lerp(new THREE.Color(0xfffaf0), mix);
+        hemi.color.copy(dimColor).lerp(hemiNormal, mix);
         hemi.groundColor.setRGB(0.07 * dim + 0.42 * mix, 0.35 * mix, 0.28 * mix);
         hemi.intensity = (0.55 * dim + 1.15 * mix) * blackout;
         sun.intensity = 2.2 * mix * blackout;
@@ -364,7 +384,7 @@ export default function SchoolScene(props) {
       return {
         name: "classroom",
         scene,
-        colliders,
+        colliders: withBounds(colliders),
         exitMeshes,
         board,
         floorY: CLASSROOM.floorY,
@@ -501,12 +521,26 @@ export default function SchoolScene(props) {
     const ray = new THREE.Raycaster();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
+    const origin = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    const reach = new THREE.Box3();
+    let nearby = [];
 
-    function blocked(world, x, z, direction, distance) {
+    // Solo se prueban los muebles y paredes al alcance del paso (sus cajas
+    // se calculan una vez al cargar), no las cientos de mallas de la escena.
+    function gatherNearby(world, distance) {
+      const size = BODY_RADIUS + distance + 0.2;
+      reach.min.set(player.x - size, -Infinity, player.z - size);
+      reach.max.set(player.x + size, Infinity, player.z + size);
+      nearby = world.colliders.filter(({ box }) => box.intersectsBox(reach)).map(({ mesh }) => mesh);
+    }
+
+    function blocked(world, x, z, distance) {
+      if (!nearby.length) return false;
       for (const height of COLLISION_HEIGHTS) {
-        ray.set(new THREE.Vector3(x, world.floorY + height, z), direction);
+        ray.set(origin.set(x, world.floorY + height, z), direction);
         ray.far = distance;
-        if (ray.intersectObjects(world.colliders, false).length) return true;
+        if (ray.intersectObjects(nearby, false).length) return true;
       }
       return false;
     }
@@ -529,13 +563,14 @@ export default function SchoolScene(props) {
         call("onMoved");
       }
       step.normalize().multiplyScalar(WALK_SPEED * delta);
+      gatherNearby(world, WALK_SPEED * delta);
 
       // Eje por eje, asi contra una pared se desliza en vez de frenar en seco.
       for (const axis of ["x", "z"]) {
         const amount = step[axis];
         if (!amount) continue;
-        const direction = new THREE.Vector3(axis === "x" ? Math.sign(amount) : 0, 0, axis === "z" ? Math.sign(amount) : 0);
-        if (!blocked(world, player.x, player.z, direction, Math.abs(amount) + BODY_RADIUS)) player[axis] += amount;
+        direction.set(axis === "x" ? Math.sign(amount) : 0, 0, axis === "z" ? Math.sign(amount) : 0);
+        if (!blocked(world, player.x, player.z, Math.abs(amount) + BODY_RADIUS)) player[axis] += amount;
       }
       const { minX, maxX, minZ, maxZ } = world.bounds;
       player.x = THREE.MathUtils.clamp(player.x, minX, maxX);
@@ -691,6 +726,7 @@ export default function SchoolScene(props) {
         const world = await load();
         if (disposed) return;
         setup(world);
+        renderer.shadowMap.needsUpdate = true;
         call("onLoading", null);
         call("onPlace", place);
       } catch (error) {
@@ -961,6 +997,14 @@ function flickerNoise(t) {
   const base = Math.sin(t) * 0.5 + Math.sin(t * 2.7 + 1.3) * 0.3 + Math.sin(t * 7.1) * 0.2;
   // De vez en cuando se corta del todo.
   return base > 0.82 ? 0.08 : 0.55 + base * 0.45;
+}
+
+// Colisionadores con su caja en coordenadas del mundo (la escena no se mueve).
+function withBounds(meshes) {
+  return meshes.map((mesh) => {
+    mesh.updateWorldMatrix(true, false);
+    return { mesh, box: new THREE.Box3().setFromObject(mesh) };
+  });
 }
 
 function namesOf(object) {
