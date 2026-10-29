@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import LockerScene from "@/components/LockerScene";
 import PhoneModel from "@/components/PhoneModel";
 import { LOCK_CLUES, LOCK_CODE } from "@/data/lockers";
-import { markStep } from "@/lib/storyProgress";
+import { markStep, useStep } from "@/lib/storyProgress";
 
 const DIALS = LOCK_CODE.length;
 
@@ -23,6 +23,9 @@ export default function LockerRoom({ handFont, embedded = false }) {
   const [shake, setShake] = useState(0);
   const [unlocked, setUnlocked] = useState(false);
   const [error, setError] = useState(false);
+  // Hasta sacar el celular la seccion mide una sola pantalla: no hay nada
+  // mas abajo, asi que no se puede seguir scrolleando.
+  const phoneTaken = useStep("phone-taken");
 
   useEffect(() => {
     if (!embedded) return;
@@ -136,7 +139,11 @@ export default function LockerRoom({ handFont, embedded = false }) {
 
   if (!embedded) return <main className="locker-page">{content}</main>;
   return (
-    <section ref={sectionRef} className="locker-scroll" aria-label="Lockers del colegio">
+    <section
+      ref={sectionRef}
+      className={`locker-scroll ${phoneTaken ? "" : "is-locked"}`}
+      aria-label="Lockers del colegio"
+    >
       <div className="locker-page locker-scroll-stage">{near && content}</div>
     </section>
   );

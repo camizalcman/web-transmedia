@@ -233,6 +233,7 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .locker-page .phone-hint { top: 24px; bottom: auto; }
 /* Lockers dentro del recorrido de la portada (sin la textura de rayas encima). */
 .locker-scroll { position: relative; z-index: 21; height: 200svh; }
+.locker-scroll.is-locked { height: 100svh; }
 .locker-scroll-stage { position: sticky; top: 0; }
 .locker-canvas { width: 100%; height: 100%; touch-action: none; }
 .locker-webgl { display: block; width: 100%; height: 100%; cursor: grab; }
