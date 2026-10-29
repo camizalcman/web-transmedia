@@ -120,6 +120,14 @@ export default function LockerScene({
     let returnView = null;
     let framedBox = null;
     let visible = true;
+    // Solo se dibuja cuando algo cambio (camara, puertas, candado...): con la
+    // escena quieta no se gasta GPU. `moved` pide ademas recalcular las sombras.
+    let dirty = true;
+    let wasPhoneOpen = false;
+    const redraw = (moved = false) => {
+      dirty = true;
+      if (moved) renderer.shadowMap.needsUpdate = true;
+    };
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(BACKGROUND);
@@ -131,6 +139,8 @@ export default function LockerScene({
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
+    // Las sombras solo cambian cuando se mueve una puerta o el candado.
+    renderer.shadowMap.autoUpdate = false;
     renderer.domElement.className = "locker-webgl";
     mount.append(renderer.domElement);
 
@@ -165,6 +175,7 @@ export default function LockerScene({
       controls.enableZoom = false;
       renderer.domElement.style.touchAction = "pan-y";
     }
+    controls.addEventListener("change", () => redraw());
 
     const wrapper = new THREE.Group();
     scene.add(wrapper);
@@ -175,6 +186,7 @@ export default function LockerScene({
       camera.aspect = clientWidth / Math.max(clientHeight, 1);
       camera.updateProjectionMatrix();
       if (framedBox && !flight && !focused) frame(framedBox);
+      redraw();
     }
 
     // Ubica la camara para que la fila de lockers entre completa en pantalla.
@@ -249,7 +261,7 @@ export default function LockerScene({
         const noteBody = built.bodies[NOTE.locker];
         if (noteBody?.backX !== undefined) {
           const { noteLines, handFont } = propsRef.current;
-          note = buildNote(noteLines ?? [], handFont, renderer.capabilities.getMaxAnisotropy());
+          note = buildNote(noteLines ?? [], handFont, renderer.capabilities.getMaxAnisotropy(), () => redraw());
           placeNote(note, noteBody);
           lockers.add(note);
         }
@@ -259,7 +271,10 @@ export default function LockerScene({
         loadProps(loader, built.bodies)
           .then((props) => {
             if (disposed) props.forEach(disposeObject);
-            else props.forEach((prop) => lockers.add(prop));
+            else {
+              props.forEach((prop) => lockers.add(prop));
+              redraw(true);
+            }
           })
           .catch((error) => console.error("No se pudieron cargar los objetos de los lockers.", error));
 
@@ -267,6 +282,7 @@ export default function LockerScene({
         const bodiesBox = new THREE.Box3();
         doors.forEach((door) => bodiesBox.expandByObject(door.body.mesh));
         frame(bodiesBox);
+        redraw(true);
         setStatus("ready");
       })
       .catch((error) => {
@@ -333,7 +349,21 @@ export default function LockerScene({
       }
     }
 
+    // El mouse puede mandar varios eventos por cuadro: el rayo para elegir el
+    // cursor se tira una sola vez, con la ultima posicion.
+    let lastMove = null;
     function handleMove(event) {
+      if (!lastMove) {
+        requestAnimationFrame(() => {
+          const move = lastMove;
+          lastMove = null;
+          if (!disposed) updateCursor(move);
+        });
+      }
+      lastMove = event;
+    }
+
+    function updateCursor(event) {
       if (flight || focused === "phone") return;
       if (focused === "note") {
         renderer.domElement.style.cursor = "zoom-out";
@@ -423,15 +453,18 @@ export default function LockerScene({
     const timer = new THREE.Timer();
     timer.connect(document);
 
-    // Ruedas, sacudida y apertura del candado.
+    // Ruedas, sacudida y apertura del candado. Devuelve true si algo se movio.
     function updatePadlock(delta) {
       const props = propsRef.current;
       const ease = 1 - Math.exp(-delta * 12);
+      let moved = false;
       padlock.dials.forEach((dial, index) => {
         const goal = -(props.digits?.[index] ?? 0) * DIAL_STEP;
         // Gira por el camino mas corto (de 9 a 0 avanza un paso, no da la vuelta).
         const diff = Math.atan2(Math.sin(goal - dial.rotation.y), Math.cos(goal - dial.rotation.y));
+        if (Math.abs(diff) < 1e-4) return;
         dial.rotation.y += diff * ease;
+        moved = true;
       });
 
       const { door } = padlock;
@@ -439,6 +472,12 @@ export default function LockerScene({
         padlock.shakeSeen = props.shake;
         if (padlock.state === "locked") padlock.shakeTime = 0.6;
       }
+      if (props.unlocked && padlock.state === "locked") {
+        padlock.state = "opening";
+        padlock.time = 0;
+      }
+      // Se dibuja tambien el cuadro en que termina cada animacion.
+      if (padlock.shakeTime > 0 || padlock.state === "opening" || padlock.state === "falling") moved = true;
       if (padlock.shakeTime > 0) {
         padlock.shakeTime = Math.max(padlock.shakeTime - delta, 0);
         const wobble = Math.sin(padlock.shakeTime * 45) * padlock.shakeTime;
@@ -447,10 +486,6 @@ export default function LockerScene({
         door.pivot.rotation.y = door.angle + door.openSign * Math.abs(wobble) * 0.02;
       }
 
-      if (props.unlocked && padlock.state === "locked") {
-        padlock.state = "opening";
-        padlock.time = 0;
-      }
       if (padlock.state === "opening") {
         padlock.time += delta;
         const lift = THREE.MathUtils.smoothstep(padlock.time, 0, 0.45);
@@ -478,6 +513,7 @@ export default function LockerScene({
         padlock.group.rotation.x = fallen * (Math.PI / 2);
         if (y === restY) padlock.state = "done";
       }
+      return moved;
     }
 
     function animate(timestamp) {
@@ -489,7 +525,12 @@ export default function LockerScene({
       // Con la vista del celular abierta la escena queda congelada detras.
       if (props.phoneOpen) {
         waitingOpen = false;
+        wasPhoneOpen = true;
         return;
+      }
+      if (wasPhoneOpen) {
+        wasPhoneOpen = false;
+        redraw();
       }
       if (focused && focused !== "note" && !flight) {
         if (focused === "lock" && props.lockOpen) waitingOpen = false;
@@ -497,15 +538,27 @@ export default function LockerScene({
       }
       const delta = Math.min(timer.getDelta(), 0.1);
       const ease = 1 - Math.exp(-delta * 5);
+      let moved = false;
       doors.forEach((door) => {
+        if (door.angle === door.target) return;
         door.angle += (door.target - door.angle) * ease;
+        // Cerca del final se la deja en su lugar (si no, se acercaria para siempre).
+        if (Math.abs(door.target - door.angle) < 1e-4) door.angle = door.target;
         door.pivot.rotation.y = door.angle;
+        moved = true;
       });
-      if (padlock) updatePadlock(delta);
-      if (flight) updateFlight(delta);
+      if (padlock && updatePadlock(delta)) moved = true;
+      if (moved) redraw(true);
+      if (flight) {
+        updateFlight(delta);
+        redraw();
+      }
       // Con la camara en el candado o el celular los controles quedan quietos
-      // (si no, su distancia minima la empujaria hacia atras).
+      // (si no, su distancia minima la empujaria hacia atras). Mientras dura
+      // la inercia del giro, `update` avisa con el evento "change".
       else if (!focused) controls.update();
+      if (!dirty) return;
+      dirty = false;
       renderer.render(scene, camera);
     }
 
@@ -513,6 +566,7 @@ export default function LockerScene({
     observer.observe(mount);
     const visibility = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      if (visible) redraw();
     });
     visibility.observe(mount);
     renderer.domElement.addEventListener("pointerdown", handleDown);
@@ -784,7 +838,7 @@ function hangPadlock(padlock, door) {
 }
 
 // Hoja de cuaderno con las cuentas escritas a mano, dibujada en un canvas.
-function buildNote(lines, fontFamily, anisotropy) {
+function buildNote(lines, fontFamily, anisotropy, onRedraw) {
   const canvas = document.createElement("canvas");
   canvas.width = 768;
   canvas.height = 1024;
@@ -799,6 +853,7 @@ function buildNote(lines, fontFamily, anisotropy) {
       .then(() => {
         drawNote(canvas, lines, fontFamily);
         texture.needsUpdate = true;
+        onRedraw();
       })
       .catch(() => {});
   }
