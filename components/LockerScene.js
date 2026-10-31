@@ -905,13 +905,18 @@ function drawNote(canvas, lines, fontFamily) {
   context.rotate(-0.04);
   context.fillRect(-120, -34, 240, 68);
   context.restore();
-  // Las cuentas, una debajo de la otra, cada una un poco torcida.
-  context.fillStyle = "#1f2b5e";
+  // Las cuentas, una debajo de la otra, cada una un poco torcida. La letra se
+  // achica (igual para todas) si la cuenta mas larga no entra en el renglon.
+  const left = 150;
   context.font = `600 132px ${fontFamily}`;
+  const widest = Math.max(...lines.map((line) => context.measureText(line).width), 1);
+  const size = Math.min(132, Math.floor((132 * (width - left - 18 - 40)) / widest));
+  context.fillStyle = "#1f2b5e";
+  context.font = `600 ${size}px ${fontFamily}`;
   context.textBaseline = "alphabetic";
   lines.forEach((line, index) => {
     context.save();
-    context.translate(190 + (index % 2) * 18, 380 + index * 222);
+    context.translate(left + (index % 2) * 18, 380 + index * 222);
     context.rotate(index % 2 ? 0.03 : -0.035);
     context.fillText(line, 0, 0);
     context.restore();
