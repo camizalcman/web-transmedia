@@ -52,7 +52,8 @@ const NOTE = { locker: 3, level: 1, height: 0.3, width: 0.15, tilt: 0.07 };
 
 // Escena de los lockers. Las puertas se abren y cierran con un clic. El
 // locker del medio tiene un candado de combinacion y adentro esta el celular.
-// - Al tocar el candado (o esa puerta) la camara se acerca y se llama a
+// - Al tocar el candado (o esa puerta) se cierran las demas puertas (las de
+//   al lado lo tapan), la camara se acerca y se llama a
 //   `onLockSelect`; `lockOpen` indica que el panel del codigo esta abierto y
 //   `digits` los numeros elegidos, que giran las ruedas. Tocar una rueda llama
 //   a `onDialStep(indice)`. Cada cambio de `shake` sacude el candado (codigo
@@ -396,6 +397,11 @@ export default function LockerScene({
     // Se mira el candado de frente a las ruedas (donde esta la marca que
     // indica el numero), un poco desde adelante para ver tambien el cuerpo.
     function flyToLock() {
+      // Las puertas abiertas de los lockers de al lado tapan el candado: se
+      // cierran mientras la camara viaja hasta el.
+      doors.forEach((door) => {
+        if (door !== padlock.door) door.target = 0;
+      });
       const { model } = padlock;
       model.updateWorldMatrix(true, false);
       const focus = model.localToWorld(new THREE.Vector3(PADLOCK_MODEL.axisX, PADLOCK_MODEL.focusY, 0));
