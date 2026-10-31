@@ -1,4 +1,5 @@
 import { Caveat } from "next/font/google";
+import BackgroundMusic from "@/components/BackgroundMusic";
 import EvidenceScroll from "@/components/EvidenceScroll";
 import IntroVideo from "@/components/IntroVideo";
 import LockerRoom from "@/components/LockerRoom";
@@ -20,6 +21,7 @@ export default function Landing() {
       <div className="noise" aria-hidden="true" />
       <div className="scanlines" aria-hidden="true" />
       <IntroVideo nextSectionId="evidencias" />
+      <BackgroundMusic startId="evidencias" />
       <EvidenceScroll id="evidencias" />
       <LockerRoom embedded handFont={handwriting.style.fontFamily} />
       <StoryGate step="phone-taken">

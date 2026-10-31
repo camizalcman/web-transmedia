@@ -21,14 +21,21 @@ export default function IntroVideo({ nextSectionId }) {
 
   useEffect(() => {
     const section = sectionRef.current;
+    const video = videoRef.current;
     let frame = 0;
 
     // --leave (0 a 1) acerca levemente el video mientras se abandona la portada.
+    // Al scrollear el video se silencia (se puede volver a prender con el boton).
     function update() {
       frame = 0;
       const leave = Math.min(window.scrollY / window.innerHeight, 1);
       section.style.setProperty("--leave", leave.toFixed(3));
-      setScrolled(window.scrollY > 8);
+      const away = window.scrollY > 8;
+      setScrolled(away);
+      if (away && !video.muted) {
+        video.muted = true;
+        setMuted(true);
+      }
     }
 
     function handleScroll() {
