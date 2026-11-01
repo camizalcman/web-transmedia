@@ -421,9 +421,11 @@ export default function SchoolScene(props) {
 
       const strokes = [];
       let current = null;
-      // La letra manuscrita del mensaje se pide de antemano.
-      const family = propsRef.current.handFont || "cursive";
-      const fontReady = document.fonts.load(`600 120px ${family}`).catch(() => {});
+      // La letra del mensaje (boardFont, o la manuscrita si no hay) se pide de antemano.
+      const { boardFont, handFont } = propsRef.current;
+      const family = boardFont || handFont || "cursive";
+      const weight = boardFont ? 400 : 600;
+      const fontReady = document.fonts.load(`${weight} 120px ${family}`).catch(() => {});
 
       function chalkSegment(a, b) {
         context.strokeStyle = "rgba(244,244,236,0.88)";
@@ -498,10 +500,10 @@ export default function SchoolScene(props) {
             remaining -= line.length;
             if (!text) return;
             let size = index === 0 ? 150 : 118;
-            context.font = `600 ${size}px ${family}`;
+            context.font = `${weight} ${size}px ${family}`;
             while (context.measureText(line).width > canvas.width * 0.9 && size > 40) {
               size -= 4;
-              context.font = `600 ${size}px ${family}`;
+              context.font = `${weight} ${size}px ${family}`;
             }
             const left = (canvas.width - context.measureText(line).width) / 2;
             const baseline = index === 0 ? 210 : 390;

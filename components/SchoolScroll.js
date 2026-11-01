@@ -12,7 +12,7 @@ const clamp = (value) => Math.min(Math.max(value, 0), 1);
 // un dibujo de las flechas hasta el primer paso, y el puntero cambia sobre lo
 // que se puede usar. El acertijo resuelto vale mientras la pagina esta
 // abierta: al recargar, el colegio vuelve a la dimension paralela.
-export default function SchoolScroll({ handFont }) {
+export default function SchoolScroll({ handFont, boardFont }) {
   const sectionRef = useRef(null);
   const entranceRef = useRef(0);
   const fadeRef = useRef(null);
@@ -112,6 +112,7 @@ export default function SchoolScroll({ handFont }) {
             exploring={arrived}
             solved={solved}
             handFont={handFont}
+            boardFont={boardFont}
             onPlace={setPlace}
             onLoading={setLoading}
             onMoved={() => setMoved(true)}

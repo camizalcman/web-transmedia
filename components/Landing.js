@@ -1,4 +1,4 @@
-import { Caveat } from "next/font/google";
+import { Caveat, Rock_Salt } from "next/font/google";
 import BackgroundMusic from "@/components/BackgroundMusic";
 import EvidenceScroll from "@/components/EvidenceScroll";
 import IntroVideo from "@/components/IntroVideo";
@@ -7,8 +7,10 @@ import PhoneScroll from "@/components/PhoneScroll";
 import SchoolScroll from "@/components/SchoolScroll";
 import StoryGate from "@/components/StoryGate";
 
-// Letra manuscrita: la hoja de los lockers y la tiza del pizarron.
+// Letra manuscrita de la hoja de los lockers.
 const handwriting = Caveat({ subsets: ["latin"], weight: "600" });
+// Letra del mensaje del pizarron: a mano, rasposa, de terror.
+const boardWriting = Rock_Salt({ subsets: ["latin"], weight: "400" });
 
 // Portada: noticiero a pantalla completa, las evidencias, los lockers (con
 // el celular bajo candado), el celular 3D y el colegio en la dimension paralela.
@@ -30,7 +32,7 @@ export default function Landing() {
         <PhoneScroll />
       </StoryGate>
       <StoryGate step="contact-talked">
-        <SchoolScroll handFont={handwriting.style.fontFamily} />
+        <SchoolScroll handFont={handwriting.style.fontFamily} boardFont={boardWriting.style.fontFamily} />
       </StoryGate>
     </main>
   );
