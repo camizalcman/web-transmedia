@@ -80,7 +80,6 @@ export default function IntroVideo({ nextSectionId }) {
       </video>
 
       <div className="intro-video-hud">
-        <span><i>●</i> SEÑAL PERDIDA</span>
         <button onClick={toggleSound} aria-pressed={!muted}>
           SONIDO {muted ? "OFF" : "ON"}
         </button>
