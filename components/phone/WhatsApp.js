@@ -22,6 +22,8 @@ import {
   VideoIcon,
 } from "@/components/phone/icons";
 import { HomeBar, StatusBar } from "@/components/phone/System";
+import { UnknownChatRow, UnknownChatView } from "@/components/phone/UnknownChat";
+import { UNKNOWN_ID } from "@/lib/unknownContact";
 
 function Avatar({ chat, size = "lg" }) {
   return (
@@ -36,24 +38,30 @@ function Decoration({ children, className = "" }) {
   return <span className={`wa-icon ${className}`} aria-hidden="true">{children}</span>;
 }
 
-export default function WhatsApp({ openChatId, readChats, scrollPositions, onOpenChat, onBack, onHome }) {
+// `contact`: el chat con el «Número desconocido» (useUnknownContact). Se suma
+// a la lista recién cuando apareció; los chats de Mica no cambian.
+export default function WhatsApp({ openChatId, readChats, scrollPositions, contact, onOpenChat, onBack, onHome }) {
   const chat = chats.find((item) => item.id === openChatId);
+  const unknownOpen = openChatId === UNKNOWN_ID && contact?.appeared;
 
   return (
     <div className="wa">
       <StatusBar />
-      {chat ? (
+      {unknownOpen ? (
+        <UnknownChatView contact={contact} scrollPositions={scrollPositions} onBack={onBack} />
+      ) : chat ? (
         <ChatView key={chat.id} chat={chat} scrollPositions={scrollPositions} onBack={onBack} />
       ) : (
-        <ChatList readChats={readChats} onOpenChat={onOpenChat} />
+        <ChatList readChats={readChats} contact={contact} onOpenChat={onOpenChat} />
       )}
       <HomeBar onHome={onHome} />
     </div>
   );
 }
 
-function ChatList({ readChats, onOpenChat }) {
-  const unreadChats = chats.filter((chat) => chat.unread && !readChats.has(chat.id)).length;
+function ChatList({ readChats, contact, onOpenChat }) {
+  const unreadChats =
+    chats.filter((chat) => chat.unread && !readChats.has(chat.id)).length + (contact?.appeared && contact.unread ? 1 : 0);
 
   return (
     <section className="wa-list" aria-label="Chats">
@@ -77,6 +85,7 @@ function ChatList({ readChats, onOpenChat }) {
       </div>
 
       <ul className="wa-rows">
+        {contact?.appeared && <UnknownChatRow contact={contact} onOpen={() => onOpenChat(UNKNOWN_ID)} />}
         {chats.map((chat) => {
           const last = chat.messages.at(-1);
           const unread = readChats.has(chat.id) ? 0 : chat.unread;

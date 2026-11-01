@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import SchoolScene from "@/components/SchoolScene";
+import { markStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
 
@@ -54,7 +55,20 @@ export default function SchoolScroll({ handFont }) {
     };
   }, []);
 
+  // Los pasos del colegio quedan marcados en el recorrido: el número
+  // desconocido del celular responde distinto según lo que ya se hizo.
+  function handleMoved() {
+    setMoved(true);
+    markStep("hallway-explored");
+  }
+
+  function handlePlace(next) {
+    setPlace(next);
+    if (next === "classroom") markStep("classroom-reached");
+  }
+
   function handleSolved() {
+    markStep("school-solved");
     setSolved(true);
   }
 
@@ -96,9 +110,9 @@ export default function SchoolScroll({ handFont }) {
             exploring={arrived}
             solved={solved}
             handFont={handFont}
-            onPlace={setPlace}
+            onPlace={handlePlace}
             onLoading={setLoading}
-            onMoved={() => setMoved(true)}
+            onMoved={handleMoved}
             onDrawing={setDrawing}
             onSolved={handleSolved}
           />
