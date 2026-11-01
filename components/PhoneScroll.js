@@ -2,11 +2,15 @@
 
 import { useEffect, useRef, useState } from "react";
 import PhoneModel from "@/components/PhoneModel";
+import { markStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
 
 // Tramo del recorrido de la seccion (0 a 1) en el que el celular entra en escena.
 const ENTRANCE = [0.15, 0.8];
+
+// Avisa a los lockers que el celular ya se puede mostrar sin trabas.
+const markPhoneReady = () => markStep("phone-ready");
 
 export default function PhoneScroll() {
   const sectionRef = useRef(null);
@@ -45,7 +49,7 @@ export default function PhoneScroll() {
 
   return (
     <section ref={sectionRef} className="phone-scroll" aria-label="Celular de la persona desaparecida">
-      <div className="phone-scroll-stage">{near && <PhoneModel entranceRef={entranceRef} />}</div>
+      <div className="phone-scroll-stage">{near && <PhoneModel entranceRef={entranceRef} onReady={markPhoneReady} />}</div>
     </section>
   );
 }

@@ -17,8 +17,13 @@ const SCREEN_CSS_WIDTH = 390;
 // Con `entranceRef` (valor de 0 a 1 que actualiza el scroll) el celular entra
 // en escena siguiendo ese valor; la rueda queda libre para scrollear la pagina
 // y la rotacion se habilita recien cuando termino de entrar.
-export default function PhoneModel({ entranceRef }) {
+// `onReady` se llama cuando el modelo ya se puede dibujar sin trabas.
+export default function PhoneModel({ entranceRef, onReady }) {
   const mountRef = useRef(null);
+  const onReadyRef = useRef(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  });
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("loading");
   const [screenNode, setScreenNode] = useState(null);
@@ -33,6 +38,8 @@ export default function PhoneModel({ entranceRef }) {
     let model = null;
     let modelSize = null;
     let entrance = 0;
+    // Hasta terminar de compilar no se dibuja (forzaria una compilacion trabada).
+    let ready = false;
     const pivot = new THREE.Group();
 
     const scene = new THREE.Scene();
@@ -131,7 +138,29 @@ export default function PhoneModel({ entranceRef }) {
         pivot.add(model);
         scene.add(pivot);
         frameModel(modelSize);
-        setStatus("ready");
+        if (scrollDriven) applyEntrance();
+
+        // Se compilan los shaders y se suben las texturas a la GPU antes de
+        // mostrarlo: si no, el primer frame se traba (justo durante la entrada).
+        model.traverse((child) => {
+          if (!child.isMesh) return;
+          const materials = Array.isArray(child.material) ? child.material : [child.material];
+          materials.forEach((material) =>
+            Object.values(material).forEach((value) => {
+              if (value?.isTexture) renderer.initTexture(value);
+            }),
+          );
+        });
+        renderer
+          .compileAsync(scene, camera)
+          .catch(() => {})
+          .then(() => {
+            if (disposed) return;
+            ready = true;
+            renderer.render(scene, camera);
+            setStatus("ready");
+            onReadyRef.current?.();
+          });
       },
       (event) => {
         if (event.lengthComputable) setProgress(Math.round((event.loaded / event.total) * 100));
@@ -189,7 +218,7 @@ export default function PhoneModel({ entranceRef }) {
 
     function animate() {
       frameId = requestAnimationFrame(animate);
-      if (!visible) return;
+      if (!visible || !ready) return;
       if (scrollDriven && modelSize) applyEntrance();
       controls.update();
       renderer.render(scene, camera);

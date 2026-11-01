@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import LockerScene from "@/components/LockerScene";
 import PhoneModel from "@/components/PhoneModel";
 import { LOCK_CLUES, LOCK_CODE } from "@/data/lockers";
-import { markStep, useStep } from "@/lib/storyProgress";
+import { hasStep, markStep, useStep } from "@/lib/storyProgress";
 
 const DIALS = LOCK_CODE.length;
 
@@ -42,22 +42,26 @@ export default function LockerRoom({ handFont, embedded = false }) {
   const openPhone = useCallback(() => {
     setPhoneOpen(true);
     if (!embedded) return;
-    // El celular continua en la seccion siguiente, que aparece recien ahora:
-    // cuando se monta, se baja hasta donde termina de entrar. Mientras tanto
-    // la escena queda en pausa y despues la camara vuelve a su lugar.
+    // El celular continua en la seccion siguiente, que aparece recien ahora.
+    // Se espera a que su escena 3D este lista (modelo cargado y shaders
+    // compilados) y recien ahi se baja hasta donde termina de entrar: si se
+    // scrollea mientras se prepara, la entrada se traba. Mientras tanto la
+    // escena de los lockers queda en pausa; se reanuda al terminar el scroll.
     markStep("phone-taken");
-    let tries = 0;
+    const startedAt = performance.now();
     const scrollToPhone = () => {
       const next = document.querySelector(".phone-scroll");
-      if (!next) {
-        if (tries++ < 60) requestAnimationFrame(scrollToPhone);
+      const waited = performance.now() - startedAt;
+      if (!next || (!hasStep("phone-ready") && waited < 6000)) {
+        if (waited < 10000) requestAnimationFrame(scrollToPhone);
+        else setPhoneOpen(false);
         return;
       }
       const top = next.offsetTop + next.offsetHeight * 0.8 - window.innerHeight;
       window.scrollTo({ top, behavior: "smooth" });
+      window.setTimeout(() => setPhoneOpen(false), 1500);
     };
     requestAnimationFrame(scrollToPhone);
-    window.setTimeout(() => setPhoneOpen(false), 1500);
   }, [embedded]);
   const openLock = useCallback(() => setLockOpen(true), []);
   const closeLock = useCallback(() => setLockOpen(false), []);
