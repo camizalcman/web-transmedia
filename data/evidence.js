@@ -93,10 +93,27 @@ export const evidence = [
     effect: "focus",
     enter: [0.62, 0.8],
     exit: null,
-    desktop: { x: 50, y: 50, w: 44, depth: 0 },
-    mobile: { x: 50, y: 78, w: 86, depth: -3 },
+    desktop: { x: 50, y: 50, w: 34, depth: 0 },
+    mobile: { x: 50, y: 78, w: 70, depth: -3 },
   },
 ];
+
+// Desafío: al final del scroll las evidencias se acomodan en una grilla (en
+// el orden de arriba, leída de izquierda a derecha y de arriba hacia abajo) y
+// hay que arrastrarlas hasta dejarlas en orden por la hora de cada cámara:
+// ev-02 ACCESO 07:45:12 · ev-06 ASCENSOR 07:48:05 · ev-05 ESCALERAS 07:51:24
+// ev-03 AULA 08:35:14 · ev-01 PATIO 09:12:45 · ev-04 LAB 10:25:34
+export const EVIDENCE_ORDER = ["ev-02", "ev-06", "ev-05", "ev-03", "ev-01", "ev-04"];
+
+// Grilla del desafío: tramo del scroll en el que se forma y columnas en
+// pantallas anchas y angostas (el tamaño de las fotos se calcula para que
+// entren lo más grandes posible).
+export const ROW = {
+  start: 0.82,
+  end: 0.95,
+  wide: { cols: 3 },
+  narrow: { cols: 2 },
+};
 
 // Evidencia del final: la cámara del acceso muestra a Mica saliendo. Aparece
 // recién después de resolver el pizarrón, cuando el jugador vuelve a subir

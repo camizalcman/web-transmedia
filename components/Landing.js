@@ -15,7 +15,8 @@ const boardWriting = Rock_Salt({ subsets: ["latin"], weight: "400" });
 
 // Portada: noticiero a pantalla completa, las evidencias, los lockers (con
 // el celular bajo candado), el celular 3D y el colegio en la dimension paralela.
-// Cada tramo se habilita al completar el anterior: el celular aparece cuando
+// Cada tramo se habilita al completar el anterior: los lockers cuando se
+// ordenan por hora las fotos de las cámaras, el celular cuando
 // se lo saca del locker y el colegio cuando, con el celular desbloqueado, se
 // habló con el número desconocido. Al resolver el pizarrón se vuelve hacia
 // arriba: el celular recibe los mensajes de Mica, los lockers tienen luz
@@ -31,7 +32,10 @@ export default function Landing() {
       <EndVideo />
       <BackgroundMusic startId="evidencias" />
       <EvidenceScroll id="evidencias" />
-      <LockerRoom embedded handFont={handwriting.style.fontFamily} />
+      {/* Los lockers aparecen recién al ordenar las fotos de las cámaras. */}
+      <StoryGate step="photos-ordered">
+        <LockerRoom embedded handFont={handwriting.style.fontFamily} />
+      </StoryGate>
       <StoryGate step="phone-taken">
         <PhoneScroll />
       </StoryGate>
