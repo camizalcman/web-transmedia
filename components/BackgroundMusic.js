@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { END_VIDEO_EVENT, SOUND_EVENT } from "@/components/EndVideo";
+import { END_VIDEO_EVENT, SOUND_EVENT, SOUND_ON_EVENT } from "@/components/EndVideo";
 import { VIDEO_SOUND_EVENT, VIDEO_TOGGLE_EVENT } from "@/components/IntroVideo";
 
 const MUSIC_SRC = "/music/music-horror.mp3";
@@ -26,6 +26,13 @@ export default function BackgroundMusic({ startId }) {
     const update = (event) => setEndVideo(event.detail.active);
     window.addEventListener(END_VIDEO_EVENT, update);
     return () => window.removeEventListener(END_VIDEO_EVENT, update);
+  }, []);
+
+  // Al darle Play al video del final, el sonido se prende.
+  useEffect(() => {
+    const turnOn = () => setOn(true);
+    window.addEventListener(SOUND_ON_EVENT, turnOn);
+    return () => window.removeEventListener(SOUND_ON_EVENT, turnOn);
   }, []);
 
   // El video del final sigue al boton.

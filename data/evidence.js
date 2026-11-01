@@ -6,6 +6,9 @@ export const INTRO_VIDEO_SRC =
 
 // Video del final, arriba de las evidencias después de resolver el pizarrón.
 export const END_VIDEO_SRC = process.env.NEXT_PUBLIC_END_VIDEO_URL || "/videos/VideoFin.mp4";
+// Segundo del video del final en el que aparece la pantalla de cierre
+// (negra, con «Gracias por participar» y el botón para reiniciar).
+export const END_SCREEN_AT = 12;
 
 // Evidencias que ingresan en escena durante el scroll: capturas de las
 // cámaras del colegio (fotos en /public/img).

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PHONE_TIME } from "@/data/conversations";
-import { hasStep } from "@/lib/storyProgress";
+import { UNKNOWN_CONTACT_STORAGE_KEY, hasStep } from "@/lib/storyProgress";
 import { FIRST_MESSAGE, FIRST_OPEN_MESSAGES, detectIntent, replyTo } from "@/lib/unknownContact";
 
 // Estado del chat con el «Número desconocido». Vive en PhoneScreen (que no se
@@ -17,7 +17,7 @@ import { FIRST_MESSAGE, FIRST_OPEN_MESSAGES, detectIntent, replyTo } from "@/lib
 // Como la cola y el outbox se guardan, una recarga a mitad de una respuesta
 // la retoma sin duplicar mensajes.
 
-const STORAGE_KEY = "senal-perdida:numero-desconocido";
+const STORAGE_KEY = UNKNOWN_CONTACT_STORAGE_KEY;
 const VERSION = 1;
 const MAX_LENGTH = 300;
 

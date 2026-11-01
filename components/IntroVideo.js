@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import PlayButton from "@/components/PlayButton";
 import { INTRO_VIDEO_SRC } from "@/data/evidence";
 
 // Segundo del video en el que aparece la flecha que invita a scrollear.
@@ -21,12 +22,18 @@ export default function IntroVideo({ nextSectionId }) {
   const videoRef = useRef(null);
   const [showCue, setShowCue] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  // El video no arranca solo: espera el boton de Play y empieza con sonido.
+  const [started, setStarted] = useState(false);
+  const startedRef = useRef(false);
 
-  useEffect(() => {
-    // Los navegadores solo permiten autoplay silenciado. Si igual se bloquea,
-    // se habilita la flecha para que el recorrido no quede detenido.
-    videoRef.current?.play().catch(() => setShowCue(true));
-  }, []);
+  function start() {
+    const video = videoRef.current;
+    startedRef.current = true;
+    setStarted(true);
+    video.muted = false;
+    announce(video);
+    video.play().catch(() => setShowCue(true));
+  }
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -62,6 +69,11 @@ export default function IntroVideo({ nextSectionId }) {
   useEffect(() => {
     const video = videoRef.current;
     function toggleSound() {
+      // Antes del Play, el parlante tambien lo inicia (con sonido).
+      if (!startedRef.current) {
+        startRef.current();
+        return;
+      }
       video.muted = !video.muted;
       announce(video);
       if (!video.muted && video.paused && !video.ended) video.play().catch(() => {});
@@ -69,6 +81,11 @@ export default function IntroVideo({ nextSectionId }) {
     window.addEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
     return () => window.removeEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
   }, []);
+
+  const startRef = useRef(start);
+  useEffect(() => {
+    startRef.current = start;
+  });
 
   function goToNextSection() {
     document.getElementById(nextSectionId)?.scrollIntoView({ behavior: "smooth" });
@@ -80,8 +97,6 @@ export default function IntroVideo({ nextSectionId }) {
         ref={videoRef}
         className="intro-video-media"
         src={INTRO_VIDEO_SRC}
-        autoPlay
-        muted
         playsInline
         preload="auto"
         onTimeUpdate={(event) => {
@@ -91,6 +106,8 @@ export default function IntroVideo({ nextSectionId }) {
       >
         Tu navegador no puede reproducir el video.
       </video>
+
+      {!started && <PlayButton onPlay={start} />}
 
       <button
         className={`scroll-cue ${showCue && !scrolled ? "is-visible" : ""}`}
