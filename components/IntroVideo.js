@@ -6,12 +6,21 @@ import { INTRO_VIDEO_SRC } from "@/data/evidence";
 // Segundo del video en el que aparece la flecha que invita a scrollear.
 const SCROLL_CUE_AT = 30;
 
+// El sonido del video se maneja con el boton del parlante de BackgroundMusic:
+// el boton pide prender o apagar con VIDEO_TOGGLE_EVENT y el video avisa su
+// estado con VIDEO_SOUND_EVENT ({ muted }).
+export const VIDEO_TOGGLE_EVENT = "senal-perdida:video-toggle";
+export const VIDEO_SOUND_EVENT = "senal-perdida:video-sound";
+
+function announce(video) {
+  window.dispatchEvent(new CustomEvent(VIDEO_SOUND_EVENT, { detail: { muted: video.muted } }));
+}
+
 export default function IntroVideo({ nextSectionId }) {
   const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const [showCue, setShowCue] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [muted, setMuted] = useState(true);
 
   useEffect(() => {
     // Los navegadores solo permiten autoplay silenciado. Si igual se bloquea,
@@ -34,7 +43,7 @@ export default function IntroVideo({ nextSectionId }) {
       setScrolled(away);
       if (away && !video.muted) {
         video.muted = true;
-        setMuted(true);
+        announce(video);
       }
     }
 
@@ -50,12 +59,16 @@ export default function IntroVideo({ nextSectionId }) {
     };
   }, []);
 
-  function toggleSound() {
+  useEffect(() => {
     const video = videoRef.current;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-    if (!video.muted && video.paused && !video.ended) video.play().catch(() => {});
-  }
+    function toggleSound() {
+      video.muted = !video.muted;
+      announce(video);
+      if (!video.muted && video.paused && !video.ended) video.play().catch(() => {});
+    }
+    window.addEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
+    return () => window.removeEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
+  }, []);
 
   function goToNextSection() {
     document.getElementById(nextSectionId)?.scrollIntoView({ behavior: "smooth" });
@@ -78,12 +91,6 @@ export default function IntroVideo({ nextSectionId }) {
       >
         Tu navegador no puede reproducir el video.
       </video>
-
-      <div className="intro-video-hud">
-        <button onClick={toggleSound} aria-pressed={!muted}>
-          SONIDO {muted ? "OFF" : "ON"}
-        </button>
-      </div>
 
       <button
         className={`scroll-cue ${showCue && !scrolled ? "is-visible" : ""}`}
