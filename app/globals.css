@@ -116,6 +116,8 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .scroll-cue { position: absolute; z-index: 3; left: 50%; bottom: max(28px, env(safe-area-inset-bottom)); display: grid; border: 0; padding: 8px; background: transparent; filter: drop-shadow(0 0 6px rgba(0,0,0,.8)); cursor: pointer; opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .8s ease, transform .8s ease; }
 .scroll-cue.is-visible { opacity: .8; pointer-events: auto; transform: translate(-50%, 0); }
 .scroll-cue:hover { opacity: 1; color: var(--red); }
+/* En las fotos, por encima de la viñeta y la barra del expediente. */
+.evidence-down { z-index: 17; bottom: 22px; }
 .scroll-cue svg { width: 16px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.4; animation: cue 1.8s ease-in-out infinite; }
 @keyframes cue { 0%, 100% { opacity: .4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(8px); } }
 

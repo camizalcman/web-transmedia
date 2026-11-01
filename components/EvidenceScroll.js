@@ -67,6 +67,8 @@ export default function EvidenceScroll({ id }) {
   const [order, setOrder] = useState(() => evidence.map((item) => item.id));
   const orderRef = useRef(order);
   const [rowReady, setRowReady] = useState(false);
+  // Flecha para seguir bajando, hasta que las fotos forman la grilla.
+  const [scrollCue, setScrollCue] = useState(true);
   const dragRef = useRef(null);
   // Después del pizarrón se suma la foto de la salida.
   const escaped = useStep("school-solved");
@@ -128,6 +130,7 @@ export default function EvidenceScroll({ id }) {
 
       setFound(count);
       setRowReady(row > 0.999);
+      setScrollCue(progress < ROW.end - 0.01);
     }
 
     // Interpolacion suave hacia el valor real del scroll (efecto de camara).
@@ -336,6 +339,22 @@ export default function EvidenceScroll({ id }) {
             );
           })}
         </div>
+
+        {/* La misma flecha del video del comienzo: hay que seguir bajando. */}
+        <button
+          className={`scroll-cue evidence-down ${scrollCue && !escaped ? "is-visible" : ""}`}
+          onClick={() => {
+            const section = sectionRef.current;
+            const total = section.offsetHeight - window.innerHeight;
+            window.scrollTo({ top: section.offsetTop + total * ROW.end, behavior: "smooth" });
+          }}
+          aria-label="Seguir bajando"
+          tabIndex={scrollCue && !escaped ? 0 : -1}
+        >
+          <svg viewBox="0 0 24 36" aria-hidden="true">
+            <path d="M12 2v30M3 23l9 9 9-9" />
+          </svg>
+        </button>
 
         {escaped && (
           <button
