@@ -55,18 +55,8 @@ export default function SchoolScroll({ handFont }) {
     };
   }, []);
 
-  // Los pasos del colegio quedan marcados en el recorrido: el número
-  // desconocido del celular responde distinto según lo que ya se hizo.
-  function handleMoved() {
-    setMoved(true);
-    markStep("hallway-explored");
-  }
-
-  function handlePlace(next) {
-    setPlace(next);
-    if (next === "classroom") markStep("classroom-reached");
-  }
-
+  // Resolver el acertijo queda marcado en el recorrido: el número
+  // desconocido del celular deja de estar atrapado y responde distinto.
   function handleSolved() {
     markStep("school-solved");
     setSolved(true);
@@ -110,9 +100,9 @@ export default function SchoolScroll({ handFont }) {
             exploring={arrived}
             solved={solved}
             handFont={handFont}
-            onPlace={handlePlace}
+            onPlace={setPlace}
             onLoading={setLoading}
-            onMoved={handleMoved}
+            onMoved={() => setMoved(true)}
             onDrawing={setDrawing}
             onSolved={handleSolved}
           />

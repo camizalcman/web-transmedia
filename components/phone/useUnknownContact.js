@@ -32,8 +32,8 @@ const INITIAL = {
   clues: [],
   asked: {},
   misses: 0,
-  // Lo que el jugador ya hizo en el colegio (se va sumando, no se pierde).
-  progress: { explored: false, classroom: false, solved: false },
+  // Si el acertijo del pizarrón ya se resolvió (una vez resuelto, no se pierde).
+  solved: false,
   unread: 0,
 };
 
@@ -65,31 +65,22 @@ function addMessage(state, message) {
   };
 }
 
-// Lo que el jugador hizo en el colegio, sumado a lo que ya se sabía.
-function readProgress(previous) {
-  return {
-    explored: previous.explored || hasStep("hallway-explored"),
-    classroom: previous.classroom || hasStep("classroom-reached"),
-    solved: previous.solved || hasStep("school-solved"),
-  };
-}
-
 // El contacto lee el mensaje pendiente y prepara su respuesta.
 function respond(state, messageId) {
   const message = state.messages.find((item) => item.id === messageId);
   if (!message || message.answered) return state;
   const intent = detectIntent(message.text);
   const asked = state.asked[intent] ?? 0;
-  const progress = readProgress(state.progress);
+  const solved = state.solved || hasStep("school-solved");
   const reply = replyTo(intent, {
     asked,
     clues: new Set(state.clues),
-    progress,
+    solved,
     misses: state.misses,
   });
   return {
     ...state,
-    progress,
+    solved,
     // Lee todo lo que el jugador escribió hasta este mensaje (doble tilde azul).
     messages: state.messages.map((item) =>
       item.from === "player" && item.id <= messageId ? { ...item, status: "read", answered: true } : item,
