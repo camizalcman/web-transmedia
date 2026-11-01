@@ -4,4 +4,4 @@
 export const SYMBOL_SEQUENCE = ["circle", "square", "triangle"];
 
 // Mensaje que se escribe solo en el pizarron al resolver el acertijo.
-export const ESCAPE_MESSAGE = ["¡Felicidades!", "Lograste salir de la dimensión paralela."];
+export const ESCAPE_MESSAGE = ["La salida está abierta.", "Ya podés salir"];
