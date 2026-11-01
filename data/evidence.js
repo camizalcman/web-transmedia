@@ -2,7 +2,7 @@
 // /public; para usar una URL publica (CDN, Firebase Storage, etc.) definir
 // NEXT_PUBLIC_INTRO_VIDEO_URL en .env.local.
 export const INTRO_VIDEO_SRC =
-  process.env.NEXT_PUBLIC_INTRO_VIDEO_URL || "/video-inicial.mp4";
+  process.env.NEXT_PUBLIC_INTRO_VIDEO_URL || "/videos/VideoIntro.mp4";
 
 // Evidencias que ingresan en escena durante el scroll: capturas de las
 // cámaras del colegio (fotos en /public/img).
