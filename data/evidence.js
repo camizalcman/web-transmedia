@@ -94,3 +94,20 @@ export const evidence = [
     mobile: { x: 50, y: 78, w: 86, depth: -3 },
   },
 ];
+
+// Evidencia del final: la cámara del acceso muestra a Mica saliendo. Aparece
+// recién después de resolver el pizarrón, cuando el jugador vuelve a subir
+// hasta las evidencias. `appear` es el tramo de la subida (cuánto se volvió
+// desde el final de la sección, de 0 a 1) en el que entra en escena.
+export const exitEvidence = {
+  id: "ev-07",
+  label: "CÁMARA ACCESO · SALIDA",
+  image: "/img/salida.png",
+  color: "#111",
+  ratio: "1678 / 937",
+  rotate: -1.5,
+  effect: "drop",
+  appear: [0.06, 0.3],
+  desktop: { x: 50, y: 50, w: 52, depth: 0 },
+  mobile: { x: 50, y: 50, w: 92, depth: 0 },
+};

@@ -10,6 +10,8 @@ import { MODEL_URL as PHONE_MODEL_URL, disposeObject } from "@/components/PhoneM
 const LOCKER_URL = "/models/school_locker.glb";
 const PADLOCK_URL = "/models/combination_padlock.glb";
 const BACKGROUND = 0x050605;
+// Fondo con la luz normal (despues de resolver el pizarron).
+const NORMAL_BACKGROUND = 0x3b3d3a;
 // Alto real del iPhone 13 Pro Max, en metros (el locker ya esta en metros).
 const PHONE_HEIGHT = 0.16;
 // Angulo de apertura maximo: el mismo que trae la puerta mas abierta del modelo.
@@ -64,8 +66,11 @@ const NOTE = { locker: 3, level: 1, height: 0.3, width: 0.15, tilt: 0.07 };
 //   `handFont`) la camara se acerca para leerla; otro clic la aleja.
 // - Con `embedded` (dentro del recorrido de la portada) no hay zoom: la rueda
 //   y el gesto vertical scrollean la pagina.
+// - Con `normal` (despues de resolver el pizarron) la luz vuelve a la
+//   normalidad: sin la luz roja ni la penumbra, y el celular ya no esta.
 // Al cerrarse el panel o la vista del celular la camara vuelve a alejarse.
 export default function LockerScene({
+  normal,
   phoneOpen,
   onPhoneSelect,
   lockOpen,
@@ -87,6 +92,7 @@ export default function LockerScene({
   // El loop de animacion lee siempre los valores mas recientes.
   useEffect(() => {
     propsRef.current = {
+      normal,
       phoneOpen,
       onPhoneSelect,
       lockOpen,
@@ -109,6 +115,8 @@ export default function LockerScene({
     let frameId;
     const doors = [];
     let phone = null;
+    let glow = null;
+    let appliedNormal = false;
     let padlock = null;
     let note = null;
     let lockers = null;
@@ -151,7 +159,8 @@ export default function LockerScene({
     scene.environment = environment;
     scene.environmentIntensity = 0.25;
 
-    scene.add(new THREE.HemisphereLight(0xb8c4ff, 0x120c0c, 0.35));
+    const hemisphere = new THREE.HemisphereLight(0xb8c4ff, 0x120c0c, 0.35);
+    scene.add(hemisphere);
     // Luz de pasillo: un foco desde arriba y adelante que proyecta sombras.
     const ceiling = new THREE.SpotLight(0xfff1dc, 40, 0, 0.75, 0.6, 2);
     ceiling.position.set(0, 3.2, 2.2);
@@ -244,7 +253,7 @@ export default function LockerScene({
 
         // Luz roja tenue detras del celular: tiñe el fondo del locker y el
         // celular tapa el reflejo directo del foco.
-        const glow = new THREE.PointLight(0xff3030, 0.25, 0.6, 2);
+        glow = new THREE.PointLight(0xff3030, 0.25, 0.6, 2);
         glow.position.set(middle.box.min.x + 0.05, middle.shelfTop + 0.09, middle.center.z);
         lockers.add(glow);
 
@@ -304,7 +313,7 @@ export default function LockerScene({
       pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
       raycaster.setFromCamera(pointer, camera);
       const targets = doors.map((door) => door.mesh);
-      if (phone) targets.push(phone);
+      if (phone?.visible) targets.push(phone);
       if (padlock?.state === "locked") targets.push(padlock.group);
       if (note) targets.push(note);
       const [hit] = raycaster.intersectObjects(targets, true);
@@ -522,6 +531,24 @@ export default function LockerScene({
       return moved;
     }
 
+    // Iluminacion: la de la dimension (penumbra y luz roja en el locker del
+    // celular) o la normal, clara y pareja, sin el celular.
+    function applyLighting(isNormal) {
+      const background = isNormal ? NORMAL_BACKGROUND : BACKGROUND;
+      scene.background.set(background);
+      scene.fog.color.set(background);
+      hemisphere.color.set(isNormal ? 0xf4f1ea : 0xb8c4ff);
+      hemisphere.groundColor.set(isNormal ? 0x4a4743 : 0x120c0c);
+      hemisphere.intensity = isNormal ? 1.25 : 0.35;
+      ceiling.color.set(isNormal ? 0xffffff : 0xfff1dc);
+      ceiling.intensity = isNormal ? 70 : 40;
+      scene.environmentIntensity = isNormal ? 0.7 : 0.25;
+      renderer.toneMappingExposure = isNormal ? 1.15 : 1;
+      if (glow) glow.visible = !isNormal;
+      if (phone) phone.visible = !isNormal;
+      redraw(true);
+    }
+
     function animate(timestamp) {
       frameId = requestAnimationFrame(animate);
       timer.update(timestamp);
@@ -537,6 +564,10 @@ export default function LockerScene({
       if (wasPhoneOpen) {
         wasPhoneOpen = false;
         redraw();
+      }
+      if (lockers && Boolean(props.normal) !== appliedNormal) {
+        appliedNormal = Boolean(props.normal);
+        applyLighting(appliedNormal);
       }
       if (focused && focused !== "note" && !flight) {
         if (focused === "lock" && props.lockOpen) waitingOpen = false;

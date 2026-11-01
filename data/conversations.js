@@ -14,7 +14,7 @@ export const chats = [
     id: "chicas",
     name: "Las chicas 💗",
     isGroup: true,
-    members: "Sofi, Tú",
+    members: "Juli, Sofi, Tú",
     avatar: { color: "#5b6670" },
     pinned: true,
     unread: 0,
@@ -71,4 +71,22 @@ export const chats = [
 ];
 
 // Nombres que se muestran en los mensajes recibidos dentro de un grupo.
-export const senderNames = { sofi: "Sofi", mama: "Mamá" };
+export const senderNames = { sofi: "Sofi", juli: "Juli", mama: "Mamá" };
+
+// Mensajes que llegan cuando el jugador vuelve al celular después de resolver
+// el pizarrón: Mica salió. Se suman al final de los chats de arriba, en este
+// orden y de a uno (no se modifican los mensajes anteriores).
+export const EPILOGUE_MESSAGES = [
+  { chat: "chicas", from: "mica", time: "22:51", status: "read", text: "CHICASSS" },
+  { chat: "chicas", from: "mica", time: "22:51", status: "read", text: "volvió todo a la normalidad" },
+  { chat: "mama", from: "mica", time: "22:51", status: "read", text: "maaa" },
+  { chat: "chicas", from: "mica", time: "22:51", status: "read", text: "estoy saliendo del colegio" },
+  { chat: "mama", from: "mica", time: "22:51", status: "read", text: "ya volvió todo a la normalidad" },
+  { chat: "mama", from: "mica", time: "22:51", status: "read", text: "estoy saliendo del colegio" },
+  { chat: "chicas", from: "sofi", time: "22:52", text: "MICA?????" },
+  { chat: "mama", from: "mama", time: "22:52", text: "MI AMOR ¿ESTÁS BIEN?" },
+  { chat: "chicas", from: "juli", time: "22:52", text: "DÓNDE ESTABAS???" },
+  { chat: "mama", from: "mama", time: "22:52", text: "No te muevas, ya voy a buscarte" },
+  { chat: "chicas", from: "mica", time: "22:52", status: "read", text: "después les cuento, fue horrible" },
+  { chat: "mama", from: "mica", time: "22:53", status: "read", text: "estoy bien ma ❤️" },
+];

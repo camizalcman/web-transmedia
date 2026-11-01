@@ -26,6 +26,8 @@ export default function LockerRoom({ handFont, embedded = false }) {
   // Hasta sacar el celular la seccion mide una sola pantalla: no hay nada
   // mas abajo, asi que no se puede seguir scrolleando.
   const phoneTaken = useStep("phone-taken");
+  // Al volver después de resolver el pizarrón, los lockers tienen luz normal.
+  const normal = useStep("school-solved");
 
   useEffect(() => {
     if (!embedded) return;
@@ -99,6 +101,7 @@ export default function LockerRoom({ handFont, embedded = false }) {
     <>
       <LockerScene
         embedded={embedded}
+        normal={normal}
         phoneOpen={phoneOpen}
         onPhoneSelect={openPhone}
         lockOpen={lockOpen}

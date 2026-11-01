@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import PhoneModel from "@/components/PhoneModel";
-import { markStep } from "@/lib/storyProgress";
+import { hasStep, markStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
 
@@ -35,6 +35,12 @@ export default function PhoneScroll() {
       const rect = section.getBoundingClientRect();
       const progress = clamp((window.innerHeight - rect.top) / section.offsetHeight);
       entranceRef.current = clamp((progress - ENTRANCE[0]) / (ENTRANCE[1] - ENTRANCE[0]));
+      // Al volver desde el colegio ya resuelto, el celular recibe los mensajes nuevos.
+      // (con el escenario del celular ocupando la pantalla, no solo pasado de largo).
+      const onScreen = rect.bottom >= window.innerHeight * 0.95;
+      if (onScreen && entranceRef.current > 0.9 && hasStep("school-solved") && !hasStep("phone-returned")) {
+        markStep("phone-returned");
+      }
     }
 
     handleScroll();

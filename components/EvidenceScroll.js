@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { evidence } from "@/data/evidence";
+import { evidence, exitEvidence } from "@/data/evidence";
+import { useStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
 const range = (progress, start, end) => clamp((progress - start) / (end - start));
@@ -12,7 +13,11 @@ export default function EvidenceScroll({ id }) {
   const sectionRef = useRef(null);
   const stageRef = useRef(null);
   const itemRefs = useRef([]);
+  const exitRef = useRef(null);
   const [found, setFound] = useState(0);
+  // Después del pizarrón se suma la foto de la salida.
+  const escaped = useStep("school-solved");
+  const items = escaped ? [...evidence, exitEvidence] : evidence;
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -42,6 +47,15 @@ export default function EvidenceScroll({ id }) {
         node.style.setProperty("--o", exit.toFixed(4));
         if (enter > 0.9) count += 1;
       });
+
+      // La foto de la salida entra a medida que se sube desde el final.
+      const exitNode = exitRef.current;
+      if (exitNode) {
+        const [from, to] = exitEvidence.appear;
+        const enter = easeOut(range(1 - progress, from, to));
+        exitNode.style.setProperty("--t", enter.toFixed(4));
+        if (enter > 0.9) count += 1;
+      }
 
       setFound(count);
     }
@@ -84,16 +98,19 @@ export default function EvidenceScroll({ id }) {
         <header className="evidence-hud">
           <span>EXPEDIENTE N.º 0613 / DESAPARICIÓN</span>
           <span>
-            EVIDENCIAS <b>{String(found).padStart(2, "0")}</b>/{String(evidence.length).padStart(2, "0")}
+            EVIDENCIAS <b>{String(found).padStart(2, "0")}</b>/{String(items.length).padStart(2, "0")}
           </span>
         </header>
 
         <div className="evidence-board">
-          {evidence.map((item, index) => (
+          {items.map((item, index) => (
             <figure
               key={item.id}
-              ref={(node) => { itemRefs.current[index] = node; }}
-              className={`evidence evidence--${item.effect}`}
+              ref={(node) => {
+                if (item === exitEvidence) exitRef.current = node;
+                else itemRefs.current[index] = node;
+              }}
+              className={`evidence evidence--${item.effect} ${item === exitEvidence ? "evidence--exit" : ""}`}
               style={{
                 "--x": `${item.desktop.x}%`,
                 "--y": `${item.desktop.y}%`,
@@ -106,7 +123,7 @@ export default function EvidenceScroll({ id }) {
                 "--ratio": item.ratio,
                 "--rot": `${item.rotate}deg`,
                 "--tone": item.color,
-                zIndex: index + 1,
+                zIndex: item === exitEvidence ? 11 : index + 1,
               }}
             >
               <div className="evidence-media">

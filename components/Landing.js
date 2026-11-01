@@ -16,8 +16,10 @@ const boardWriting = Rock_Salt({ subsets: ["latin"], weight: "400" });
 // el celular bajo candado), el celular 3D y el colegio en la dimension paralela.
 // Cada tramo se habilita al completar el anterior: el celular aparece cuando
 // se lo saca del locker y el colegio cuando, con el celular desbloqueado, se
-// habló con el número desconocido. Al resolver el pizarrón ya no se puede
-// volver hacia arriba.
+// habló con el número desconocido. Al resolver el pizarrón se vuelve hacia
+// arriba: el celular recibe los mensajes de Mica, los lockers tienen luz
+// normal y en las evidencias aparece la foto de la salida (el video del
+// comienzo ya no se ve).
 // Es un Server Component; solo el video y los escenarios de scroll se hidratan.
 export default function Landing() {
   return (

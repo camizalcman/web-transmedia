@@ -40,8 +40,23 @@ function Decoration({ children, className = "" }) {
 
 // `contact`: el chat con el «Número desconocido» (useUnknownContact). Se suma
 // a la lista recién cuando apareció; los chats de Mica no cambian.
-export default function WhatsApp({ openChatId, readChats, scrollPositions, contact, onOpenChat, onBack, onHome }) {
-  const chat = chats.find((item) => item.id === openChatId);
+// `extraMessages` (por id de chat) se agregan al final de cada conversación y
+// `extraUnread` cuenta los que llegaron sin leer.
+export default function WhatsApp({
+  openChatId,
+  readChats,
+  scrollPositions,
+  contact,
+  extraMessages = {},
+  extraUnread = {},
+  onOpenChat,
+  onBack,
+  onHome,
+}) {
+  const allChats = chats.map((item) =>
+    extraMessages[item.id] ? { ...item, messages: [...item.messages, ...extraMessages[item.id]] } : item,
+  );
+  const chat = allChats.find((item) => item.id === openChatId);
   const unknownOpen = openChatId === UNKNOWN_ID && contact?.appeared;
 
   return (
@@ -52,16 +67,23 @@ export default function WhatsApp({ openChatId, readChats, scrollPositions, conta
       ) : chat ? (
         <ChatView key={chat.id} chat={chat} scrollPositions={scrollPositions} onBack={onBack} />
       ) : (
-        <ChatList readChats={readChats} contact={contact} onOpenChat={onOpenChat} />
+        <ChatList
+          chats={allChats}
+          readChats={readChats}
+          extraUnread={extraUnread}
+          contact={contact}
+          onOpenChat={onOpenChat}
+        />
       )}
       <HomeBar onHome={onHome} />
     </div>
   );
 }
 
-function ChatList({ readChats, contact, onOpenChat }) {
+function ChatList({ chats, readChats, extraUnread, contact, onOpenChat }) {
+  const unreadOf = (chat) => (readChats.has(chat.id) ? 0 : chat.unread) + (extraUnread[chat.id] ?? 0);
   const unreadChats =
-    chats.filter((chat) => chat.unread && !readChats.has(chat.id)).length + (contact?.appeared && contact.unread ? 1 : 0);
+    chats.filter((chat) => unreadOf(chat) > 0).length + (contact?.appeared && contact.unread ? 1 : 0);
 
   return (
     <section className="wa-list" aria-label="Chats">
@@ -88,7 +110,7 @@ function ChatList({ readChats, contact, onOpenChat }) {
         {contact?.appeared && <UnknownChatRow contact={contact} onOpen={() => onOpenChat(UNKNOWN_ID)} />}
         {chats.map((chat) => {
           const last = chat.messages.at(-1);
-          const unread = readChats.has(chat.id) ? 0 : chat.unread;
+          const unread = unreadOf(chat);
           return (
             <li key={chat.id}>
               <button className="wa-row" onClick={() => onOpenChat(chat.id)}>
@@ -135,13 +157,25 @@ function ChatList({ readChats, contact, onOpenChat }) {
 function ChatView({ chat, scrollPositions, onBack }) {
   const scrollRef = useRef(null);
 
+  const countKey = `${chat.id}:mensajes`;
+  const countRef = useRef(chat.messages.length);
+
   // Al abrir se muestra el final de la conversación (el último estado de la
-  // historia) o, si ya se había leído, la posición en la que se dejó.
+  // historia) o, si ya se había leído, la posición en la que se dejó (salvo
+  // que hayan llegado mensajes nuevos desde entonces: ahí, el final).
   useLayoutEffect(() => {
     const node = scrollRef.current;
     const saved = scrollPositions.current[chat.id];
-    node.scrollTop = saved ?? node.scrollHeight;
-  }, [chat.id, scrollPositions]);
+    const savedCount = scrollPositions.current[countKey] ?? countRef.current;
+    node.scrollTop = saved !== undefined && savedCount >= countRef.current ? saved : node.scrollHeight;
+  }, [chat.id, countKey, scrollPositions]);
+
+  // Un mensaje nuevo con el chat abierto baja hasta el final.
+  useLayoutEffect(() => {
+    if (chat.messages.length <= countRef.current) return;
+    countRef.current = chat.messages.length;
+    scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [chat.messages.length]);
 
   return (
     <section className="wa-chat" aria-label={`Conversación con ${chat.name}`}>
@@ -161,7 +195,10 @@ function ChatView({ chat, scrollPositions, onBack }) {
       <ol
         ref={scrollRef}
         className="wa-messages"
-        onScroll={(event) => { scrollPositions.current[chat.id] = event.currentTarget.scrollTop; }}
+        onScroll={(event) => {
+          scrollPositions.current[chat.id] = event.currentTarget.scrollTop;
+          scrollPositions.current[countKey] = chat.messages.length;
+        }}
       >
         <li className="wa-day">Hoy</li>
         {chat.messages.map((message, index) => {

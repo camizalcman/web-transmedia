@@ -2,9 +2,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import SchoolScene from "@/components/SchoolScene";
-import { markStep } from "@/lib/storyProgress";
+import { markStep, useStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
+// Despues de resolver: espera hasta que el mensaje del pizarron termino de
+// escribirse y unos segundos mas antes de avisar que hay mensajes (ms).
+const RETURN_NOTICE_DELAY = 8000;
 
 // Continuacion del recorrido despues del celular: el colegio en la dimension
 // paralela. La escena entra con el scroll y, cuando ocupa la pantalla, ya se
@@ -25,6 +28,9 @@ export default function SchoolScroll({ handFont, boardFont }) {
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(null);
   const [drawing, setDrawing] = useState(false);
+  const [returnNotice, setReturnNotice] = useState(false);
+  // El aviso queda hasta que el jugador vuelve al celular.
+  const returned = useStep("phone-returned");
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -55,16 +61,31 @@ export default function SchoolScroll({ handFont, boardFont }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!solved) return;
+    const timer = window.setTimeout(() => setReturnNotice(true), RETURN_NOTICE_DELAY);
+    return () => window.clearTimeout(timer);
+  }, [solved]);
+
   // Resolver el acertijo queda marcado en el recorrido: el número
-  // desconocido del celular deja de estar atrapado y responde distinto.
+  // desconocido deja de estar atrapado, el celular recibe los mensajes de
+  // Mica y los lockers vuelven a tener luz normal.
   function handleSolved() {
     markStep("school-solved");
     setSolved(true);
     lockAbove();
   }
 
-  // Al resolver el acertijo ya no se puede volver: se ocultan las secciones
-  // de arriba (video, evidencias, lockers, celular) sin que la vista salte.
+  // Tocar el aviso sube hasta el celular (tambien se puede scrollear).
+  function goToPhone() {
+    const phone = document.querySelector(".phone-scroll");
+    if (!phone) return;
+    window.scrollTo({ top: phone.offsetTop + phone.offsetHeight * 0.8 - window.innerHeight, behavior: "smooth" });
+  }
+
+  // Al resolver el acertijo el recorrido vuelve hacia arriba: celular,
+  // lockers y evidencias (con la foto de la salida). Se oculta el video del
+  // comienzo, así las evidencias son el tope, sin que la vista salte.
   function lockAbove() {
     const section = sectionRef.current;
     const landing = section?.closest(".landing");
@@ -88,7 +109,6 @@ export default function SchoolScroll({ handFont, boardFont }) {
     },
   });
 
-  const placeLabel = place === "classroom" ? "AULA 2° E" : "PASILLO";
   const stageClass = [
     "school-stage",
     solved && "is-normal",
@@ -123,12 +143,6 @@ export default function SchoolScroll({ handFont, boardFont }) {
         <div className="school-vignette" aria-hidden="true" />
         <div ref={fadeRef} className="school-fade" aria-hidden="true" />
 
-        <header className="school-hud">
-          <span>
-            <i>●</i> {placeLabel} · {solved ? "REALIDAD" : "DIMENSIÓN PARALELA"}
-          </span>
-        </header>
-
         {loading && <p className="school-loading" role="status">{loading}</p>}
 
         {/* Las flechas del teclado, dibujadas, hasta que se da el primer paso. */}
@@ -157,6 +171,20 @@ export default function SchoolScroll({ handFont, boardFont }) {
               <rect x="2" y="2" width="44" height="12" rx="2" />
               <rect x="2" y="14" width="44" height="12" rx="1" />
             </svg>
+          </button>
+        )}
+
+        {returnNotice && !returned && (
+          <button className="school-return" onClick={goToPhone} aria-label="Hay mensajes sin leer. Volver al celular">
+            <span className="school-return-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M12 3a6 6 0 0 0-6 6v3.6L4.3 15.5A1 1 0 0 0 5.2 17h13.6a1 1 0 0 0 .9-1.5L18 12.6V9a6 6 0 0 0-6-6z" fill="currentColor" />
+                <path d="M9.5 19a2.5 2.5 0 0 0 5 0z" fill="currentColor" />
+              </svg>
+              <b />
+            </span>
+            <strong>Hay mensajes sin leer</strong>
+            <span className="school-return-arrow" aria-hidden="true">↑</span>
           </button>
         )}
 

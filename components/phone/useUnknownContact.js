@@ -72,13 +72,15 @@ function addMessage(state, message) {
 function respond(state, messageId) {
   const message = state.messages.find((item) => item.id === messageId);
   if (!message || message.answered) return state;
-  const intent = detectIntent(message.text);
-  const asked = state.asked[intent] ?? 0;
   const solved = state.solved || hasStep("school-solved");
+  // Después del pizarrón todo cae en la misma respuesta de "ya te liberaste".
+  const intent = solved ? "liberado" : detectIntent(message.text);
+  const asked = state.asked[intent] ?? 0;
   const reply = replyTo(intent, {
     asked,
     clues: new Set(state.clues),
     solved,
+    liberado: state.asked.liberado ?? 0,
     misses: state.misses,
   });
   return {

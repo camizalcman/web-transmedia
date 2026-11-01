@@ -50,8 +50,21 @@ export default function BackgroundMusic({ startId }) {
   return (
     <>
       <audio ref={audioRef} src={MUSIC_SRC} loop preload="auto" />
-      <button className="music-toggle" onClick={() => setOn((value) => !value)} aria-pressed={on}>
-        MÚSICA {on ? "ON" : "OFF"}
+      <button
+        className="music-toggle"
+        onClick={() => setOn((value) => !value)}
+        aria-pressed={on}
+        aria-label={on ? "Apagar la música" : "Prender la música"}
+        title={on ? "Apagar la música" : "Prender la música"}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" />
+          {on ? (
+            <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          ) : (
+            <path d="m16 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+          )}
+        </svg>
       </button>
     </>
   );
