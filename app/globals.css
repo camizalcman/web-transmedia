@@ -85,6 +85,8 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 
 /* Portada: noticiero a pantalla completa */
 .landing { position: relative; background: var(--black); }
+/* Al resolver el pizarrón el recorrido termina: lo de arriba desaparece y no se puede volver. */
+.landing.is-finished > section:not(.school-scroll) { display: none; }
 
 .intro-video { --leave: 0; position: relative; height: 100svh; overflow: hidden; background: #000; }
 .intro-video-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(calc(1 + var(--leave) * .08)); }

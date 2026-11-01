@@ -60,6 +60,18 @@ export default function SchoolScroll({ handFont }) {
   function handleSolved() {
     markStep("school-solved");
     setSolved(true);
+    lockAbove();
+  }
+
+  // Al resolver el acertijo ya no se puede volver: se ocultan las secciones
+  // de arriba (video, evidencias, lockers, celular) sin que la vista salte.
+  function lockAbove() {
+    const section = sectionRef.current;
+    const landing = section?.closest(".landing");
+    if (!landing) return;
+    const offset = window.scrollY - section.offsetTop;
+    landing.classList.add("is-finished");
+    window.scrollTo({ top: section.offsetTop + offset, behavior: "instant" });
   }
 
   // Botones tactiles: mientras se mantienen apretados mueven o giran.

@@ -32,6 +32,9 @@ const INITIAL = {
   clues: [],
   asked: {},
   misses: 0,
+  // Si ya hubo una conversación: el jugador escribió y el contacto terminó
+  // de contestarle. Habilita bajar al pasillo.
+  talked: false,
   // Si el acertijo del pizarrón ya se resolvió (una vez resuelto, no se pierde).
   solved: false,
   unread: 0,
@@ -135,9 +138,13 @@ export default function useUnknownContact(isOpen) {
               setState((current) => {
                 if (current.outbox[0] !== nextOut) return current;
                 const next = addMessage(current, { from: "unknown", text: nextOut });
+                const outbox = current.outbox.slice(1);
                 return {
                   ...next,
-                  outbox: current.outbox.slice(1),
+                  outbox,
+                  talked:
+                    current.talked ||
+                    (outbox.length === 0 && current.messages.some((item) => item.from === "player" && item.answered)),
                   unread: isOpenRef.current ? 0 : current.unread + 1,
                 };
               });
@@ -191,6 +198,7 @@ export default function useUnknownContact(isOpen) {
 
   return {
     appeared: state.appeared,
+    talked: state.talked,
     messages: state.messages,
     unread: state.unread,
     typing,

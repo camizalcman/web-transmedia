@@ -6,10 +6,11 @@ import LockScreen from "@/components/phone/LockScreen";
 import { UnknownNotification } from "@/components/phone/UnknownChat";
 import useUnknownContact from "@/components/phone/useUnknownContact";
 import WhatsApp from "@/components/phone/WhatsApp";
+import { chats } from "@/data/conversations";
 import { FIRST_MESSAGE, UNKNOWN_ID } from "@/lib/unknownContact";
 import { markStep } from "@/lib/storyProgress";
 
-// Cuánto después de abrir el primer chat de Mica escribe el número desconocido (ms).
+// Cuánto después de abrir el último de los chats de Mica escribe el número desconocido (ms).
 const UNKNOWN_DELAY = 6000;
 // Cuánto queda la notificación en pantalla si no se la toca (ms).
 const NOTIFICATION_TIME = 7000;
@@ -26,7 +27,8 @@ export default function PhoneScreen() {
   const [notification, setNotification] = useState(false);
   const scrollPositions = useRef({});
   const contact = useUnknownContact(screen === "whatsapp" && openChatId === UNKNOWN_ID);
-  const { appeared, appear, open: openContact } = contact;
+  const { appeared, talked, appear, open: openContact } = contact;
+  const allChatsRead = chats.every((chat) => readChats.has(chat.id));
 
   function openChat(chatId) {
     setOpenChatId(chatId);
@@ -37,16 +39,23 @@ export default function PhoneScreen() {
     }
   }
 
-  // El número desconocido escribe una sola vez, cuando el jugador ya está
-  // leyendo las conversaciones de Mica (abrió al menos un chat).
+  // El número desconocido escribe una sola vez, cuando el jugador ya entró a
+  // los tres chats de Mica.
   useEffect(() => {
-    if (appeared || readChats.size === 0 || screen === "lock") return;
+    if (appeared || !allChatsRead || screen === "lock") return;
     const timer = window.setTimeout(() => {
       appear();
       setNotification(true);
     }, UNKNOWN_DELAY);
     return () => window.clearTimeout(timer);
-  }, [appeared, readChats.size, screen, appear]);
+  }, [appeared, allChatsRead, screen, appear]);
+
+  // Cuando el jugador ya habló con el número desconocido (le escribió y
+  // recibió respuesta), se habilita bajar al pasillo. Si la conversación ya
+  // había ocurrido antes de recargar, se habilita al desbloquear el celular.
+  useEffect(() => {
+    if (talked && screen !== "lock") markStep("contact-talked");
+  }, [talked, screen]);
 
   useEffect(() => {
     if (!notification) return;

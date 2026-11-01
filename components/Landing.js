@@ -13,7 +13,9 @@ const handwriting = Caveat({ subsets: ["latin"], weight: "600" });
 // Portada: noticiero a pantalla completa, las evidencias, los lockers (con
 // el celular bajo candado), el celular 3D y el colegio en la dimension paralela.
 // Cada tramo se habilita al completar el anterior: el celular aparece cuando
-// se lo saca del locker y el colegio cuando se desbloquea el celular.
+// se lo saca del locker y el colegio cuando, con el celular desbloqueado, se
+// habló con el número desconocido. Al resolver el pizarrón ya no se puede
+// volver hacia arriba.
 // Es un Server Component; solo el video y los escenarios de scroll se hidratan.
 export default function Landing() {
   return (
@@ -27,7 +29,7 @@ export default function Landing() {
       <StoryGate step="phone-taken">
         <PhoneScroll />
       </StoryGate>
-      <StoryGate step="phone-unlocked">
+      <StoryGate step="contact-talked">
         <SchoolScroll handFont={handwriting.style.fontFamily} />
       </StoryGate>
     </main>
