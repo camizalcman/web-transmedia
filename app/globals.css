@@ -85,8 +85,12 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 
 /* Portada: noticiero a pantalla completa */
 .landing { position: relative; background: var(--black); }
-/* Al resolver el pizarrón se vuelve hasta las evidencias: el video del comienzo desaparece. */
+/* Al resolver el pizarrón se vuelve hasta las evidencias: el video del comienzo
+   desaparece y en su lugar queda el del final. */
 .landing.is-finished > .intro-video { display: none; }
+.end-video { display: none; position: relative; height: 100svh; overflow: hidden; background: #000; }
+.landing.is-finished > .end-video { display: block; }
+.end-video-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 
 .intro-video { --leave: 0; position: relative; height: 100svh; overflow: hidden; background: #000; }
 .intro-video-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(calc(1 + var(--leave) * .08)); }
@@ -148,6 +152,13 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .evidence figcaption small { display: block; color: var(--muted); font-size: 8px; }
 
 
+.evidence-stage { --exit: 0; }
+/* Flecha para seguir subiendo hasta el video del final (aparece con la foto de la salida). */
+.evidence-up { position: absolute; z-index: 17; top: 68px; left: 50%; display: grid; border: 0; padding: 6px; background: transparent; color: var(--ink); filter: drop-shadow(0 0 6px rgba(0,0,0,.9)); cursor: pointer; opacity: calc(var(--exit) * .85); pointer-events: none; transform: translateX(-50%); }
+.evidence-stage[data-exit="on"] .evidence-up { pointer-events: auto; }
+.evidence-up:hover { color: var(--red); opacity: 1; }
+.evidence-up svg { width: 12px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; animation: evidence-up 1.8s ease-in-out infinite; }
+@keyframes evidence-up { 50% { transform: translateY(-6px); } }
 .evidence-progress { position: absolute; z-index: 16; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--red); box-shadow: 0 0 12px var(--red); transform: scaleX(var(--p)); transform-origin: left; }
 
 .chapter-layout {

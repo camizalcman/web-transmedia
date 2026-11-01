@@ -1,5 +1,6 @@
 import { Caveat, Rock_Salt } from "next/font/google";
 import BackgroundMusic from "@/components/BackgroundMusic";
+import EndVideo from "@/components/EndVideo";
 import EvidenceScroll from "@/components/EvidenceScroll";
 import IntroVideo from "@/components/IntroVideo";
 import LockerRoom from "@/components/LockerRoom";
@@ -18,8 +19,8 @@ const boardWriting = Rock_Salt({ subsets: ["latin"], weight: "400" });
 // se lo saca del locker y el colegio cuando, con el celular desbloqueado, se
 // habló con el número desconocido. Al resolver el pizarrón se vuelve hacia
 // arriba: el celular recibe los mensajes de Mica, los lockers tienen luz
-// normal y en las evidencias aparece la foto de la salida (el video del
-// comienzo ya no se ve).
+// normal y en las evidencias aparece la foto de la salida. Arriba de todo,
+// en lugar del video del comienzo, queda el video del final.
 // Es un Server Component; solo el video y los escenarios de scroll se hidratan.
 export default function Landing() {
   return (
@@ -27,6 +28,7 @@ export default function Landing() {
       <div className="noise" aria-hidden="true" />
       <div className="scanlines" aria-hidden="true" />
       <IntroVideo nextSectionId="evidencias" />
+      <EndVideo />
       <BackgroundMusic startId="evidencias" />
       <EvidenceScroll id="evidencias" />
       <LockerRoom embedded handFont={handwriting.style.fontFamily} />

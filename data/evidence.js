@@ -4,6 +4,9 @@
 export const INTRO_VIDEO_SRC =
   process.env.NEXT_PUBLIC_INTRO_VIDEO_URL || "/videos/VideoIntro.mp4";
 
+// Video del final, arriba de las evidencias después de resolver el pizarrón.
+export const END_VIDEO_SRC = process.env.NEXT_PUBLIC_END_VIDEO_URL || "/videos/VideoFin.mp4";
+
 // Evidencias que ingresan en escena durante el scroll: capturas de las
 // cámaras del colegio (fotos en /public/img).
 //

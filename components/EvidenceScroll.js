@@ -54,6 +54,9 @@ export default function EvidenceScroll({ id }) {
         const [from, to] = exitEvidence.appear;
         const enter = easeOut(range(1 - progress, from, to));
         exitNode.style.setProperty("--t", enter.toFixed(4));
+        // La flecha para seguir subiendo aparece con la foto.
+        stage.style.setProperty("--exit", enter.toFixed(4));
+        stage.dataset.exit = enter > 0.5 ? "on" : "";
         if (enter > 0.9) count += 1;
       }
 
@@ -142,6 +145,18 @@ export default function EvidenceScroll({ id }) {
             </figure>
           ))}
         </div>
+
+        {escaped && (
+          <button
+            className="evidence-up"
+            onClick={() => document.querySelector(".end-video")?.scrollIntoView({ behavior: "smooth" })}
+            aria-label="Seguir subiendo"
+          >
+            <svg viewBox="0 0 24 36" aria-hidden="true">
+              <path d="M12 34V4M3 13l9-9 9 9" />
+            </svg>
+          </button>
+        )}
 
         <div className="evidence-progress" aria-hidden="true" />
       </div>
