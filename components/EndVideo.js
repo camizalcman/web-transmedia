@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { devFinalStart } from "@/components/DevShortcut";
 import PlayButton from "@/components/PlayButton";
 import { END_SCREEN_AT, END_VIDEO_SRC } from "@/data/evidence";
 import { resetGame, useStep } from "@/lib/storyProgress";
@@ -71,6 +72,9 @@ export default function EndVideo() {
     soundOnRef.current = true;
     window.dispatchEvent(new Event(SOUND_ON_EVENT));
     video.muted = false;
+    // Atajo de desarrollo: ?final=10 arranca en ese segundo.
+    const from = devFinalStart();
+    if (from) video.currentTime = from;
     video.play().catch(() => {});
   }
 

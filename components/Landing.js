@@ -1,5 +1,6 @@
 import { Caveat, Rock_Salt } from "next/font/google";
 import BackgroundMusic from "@/components/BackgroundMusic";
+import DevShortcut from "@/components/DevShortcut";
 import EndVideo from "@/components/EndVideo";
 import EvidenceScroll from "@/components/EvidenceScroll";
 import IntroVideo from "@/components/IntroVideo";
@@ -28,6 +29,7 @@ export default function Landing() {
     <main className="landing">
       <div className="noise" aria-hidden="true" />
       <div className="scanlines" aria-hidden="true" />
+      <DevShortcut />
       <IntroVideo nextSectionId="evidencias" />
       <EndVideo />
       <BackgroundMusic startId="evidencias" />
