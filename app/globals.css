@@ -245,6 +245,19 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .close { position: absolute; top: 26px; right: 30px; border: 0; background: transparent; font-size: 28px; cursor: pointer; }
 .loading { min-height: 100svh; display: grid; place-content: center; background: #050706; color: #b7ff3c; font: 11px "Courier New", monospace; letter-spacing: .18em; }
 
+/* Pantallas de carga, error y ruta inexistente (app/loading, error, not-found). */
+.signal-screen { position: relative; min-height: 100svh; display: grid; place-content: center; justify-items: center; gap: 18px; padding: 30px; text-align: center; background: radial-gradient(circle at 50% 45%, rgba(125,31,44,.22), transparent 55%), var(--black); color: var(--ink); }
+.signal-screen h1 { margin: 0; max-width: 14ch; font-family: Arial Black, Impact, sans-serif; font-size: clamp(32px, 6vw, 72px); line-height: .95; letter-spacing: -.05em; text-transform: uppercase; }
+.signal-kicker { margin: 0; color: var(--red); font-size: 11px; letter-spacing: .22em; animation: signal-blink 1.2s steps(2, start) infinite; }
+.signal-copy { margin: 0; max-width: 40ch; color: var(--muted); font-size: 14px; }
+.signal-dots { margin: 0; color: var(--red); font-size: 12px; letter-spacing: .6em; animation: signal-blink .8s steps(2, start) infinite; }
+.signal-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+.signal-actions button, .signal-actions a { padding: 12px 20px; border: 1px solid var(--line); background: transparent; color: var(--ink); font: 11px "Courier New", monospace; letter-spacing: .18em; text-decoration: none; cursor: pointer; }
+.signal-actions button:hover, .signal-actions a:hover, .signal-actions button:focus-visible, .signal-actions a:focus-visible { border-color: var(--red); color: var(--red); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@keyframes signal-blink { to { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .signal-kicker, .signal-dots { animation: none; } }
+
 .auth-overlay { position: fixed; z-index: 60; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(3, 5, 4, .9); backdrop-filter: blur(12px); }
 .auth-panel { position: relative; width: min(460px, 100%); border: 1px solid #2e352f; padding: 30px; background: #080b09; box-shadow: 0 30px 100px rgba(0,0,0,.65); }
 .auth-panel::before { content: ""; position: absolute; inset: 7px; border: 1px solid rgba(255,255,255,.035); pointer-events: none; }

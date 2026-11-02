@@ -1,264 +1,267 @@
-# TP6 — Experiencia web transmedia
+# Señal perdida
 
-> **Boilerplate:** SEÑAL 88
-> Next.js + Three.js + Firebase · JavaScript · App Router
+> Experiencia web transmedia de terror · Next.js + Three.js + Firebase
+> TP6 — Programación III · UMAI · 2026
 
-## Descripción
+**Deploy:** _(completar con el enlace público)_
+**Repositorio:** https://github.com/camizalcman/web-transmedia
 
-Desarrollar una experiencia web transmedia inmersiva inspirada en una película de culto, un videojuego, una obra audiovisual, una producción musical, una leyenda urbana o un universo narrativo original.
+---
 
-La experiencia debe proponer una navegación con hilo conductor. La persona usuaria deberá descubrir información, relacionar elementos o reconstruir una parte del relato mediante la exploración y la interacción.
+## Premisa
 
-El resultado no debe limitarse a una landing page temática. Tampoco se requiere desarrollar un videojuego. El objetivo es integrar narrativa, diseño de interacción, contenido multimedia, gráficos 3D y persistencia de datos en una aplicación web navegable.
+> Una noche, Mica baja las escaleras del colegio para encontrarse con sus amigas y nunca llega a la salida: con las cámaras de seguridad, su celular y los mensajes de alguien que no debería poder escribir, tenés que descubrir dónde quedó atrapada y abrirle el camino de vuelta.
 
-Si se utiliza una propiedad intelectual existente, el proyecto tendrá finalidad académica y deberá incluir las referencias y los créditos correspondientes.
+## Concepto y sinopsis
 
-## Referencia del boilerplate
+*Señal perdida* es un relato de desaparición contado a través de los restos digitales que dejó: un noticiero, las grabaciones de las cámaras del colegio, un locker cerrado con candado y un celular que todavía tiene batería.
 
-SEÑAL 88 presenta el archivo de una transmisión perdida. La experiencia está organizada en tres fragmentos. Cada fragmento contiene un artefacto 3D interactivo y una evidencia. La recuperación de las evidencias habilita la navegación y permite acceder al desenlace.
+La experiencia empieza como empieza cualquier caso: con la noticia en la televisión. A partir de ahí la persona usuaria deja de mirar y empieza a investigar. Revisa las cámaras, encuentra el locker de Mica, logra abrirlo y recupera su celular. En los chats aparecen los últimos mensajes de Mica, cada vez más desesperados: las luces se apagaron, todo se volvió rojo, baja y baja escaleras y no llega nunca. Y entonces escribe un **número desconocido**.
 
-La propuesta narrativa y la identidad visual funcionan como demostración técnica. Deben ser reemplazadas o reformuladas para el proyecto entregado.
+Lo que sigue ya no ocurre del todo en este mundo. El colegio tiene otra versión, una dimensión paralela, y la única forma de sacar a Mica de ahí es recorrerla y entender lo que dejó escrito.
 
-## Posibles enfoques
+La interfaz es parte del relato: la página no deja avanzar hasta que se resuelve cada tramo, el celular funciona como un teléfono real y, cuando el caso se cierra, todo lo que ya se recorrió **cambia**: el regreso hacia arriba muestra un mundo distinto del que se dejó.
 
-- Archivo de una transmisión interrumpida.
-- Escritorio o sistema operativo de un personaje.
-- Museo virtual cuyos objetos modifican el relato.
-- Investigación compuesta por documentos, audios y escenas 3D.
-- Enciclopedia de un mundo ficticio.
-- Sitio institucional de una organización perteneciente al universo narrativo.
-- Relato paralelo a una película o videojuego, situado antes, después o desde otro punto de vista.
+## Cómo se juega
 
-## Referencias de narrativa web interactiva
+La experiencia es un único recorrido vertical: **se avanza scrolleando hacia abajo**. Cada sección aparece recién cuando se resuelve la anterior, así que si la página "termina", todavía queda algo por hacer en la sección actual.
 
-Estas referencias permiten analizar proyectos en los que la interfaz, la navegación y las condiciones de acceso forman parte del relato.
+| Tramo | Qué hay | Qué se hace |
+| --- | --- | --- |
+| 1. El noticiero | Video a pantalla completa con la noticia de la desaparición. | Darle Play. Al terminar, aparece la flecha para bajar. |
+| 2. Las evidencias | Las capturas de las cámaras de seguridad del colegio entran en escena con el scroll. | Mirarlas con atención: al final se acomodan en una grilla y hay que **arrastrarlas para ordenarlas**. |
+| 3. Los lockers | Escena 3D con los lockers del colegio. Uno tiene candado. | Abrir puertas, revisar lo que hay adentro y encontrar el código del candado. |
+| 4. El celular | El celular de Mica en 3D, con su pantalla funcionando. | Desbloquearlo, leer sus chats y **responderle al número desconocido** escribiendo libremente. |
+| 5. La dimensión paralela | El colegio en primera persona, a oscuras y con luces rojas. | Recorrerlo (flechas del teclado o botones en pantalla) y resolver lo que pide el aula. |
+| 6. El regreso | Todo lo anterior, transformado. | Volver hacia arriba, revisar el celular y las evidencias, y ver el video final. |
 
-### Requiem for a Dream — sitio web de la película (2000)
+Al terminar aparece una pantalla de cierre con la opción de **reiniciar** el caso desde el principio.
 
-El sitio desarrollado por Hi-ReS! para la película de Darren Aronofsky fue concebido como una extensión narrativa que podía recorrerse antes, después o de manera independiente al film. La persona visitante ocupaba un lugar dentro del relato y atravesaba una estructura no lineal vinculada con sus personajes.
+**Consejos sin spoilers**
 
-La interfaz se degradaba progresivamente durante la navegación: aparecían errores, pérdida de control, desorientación y rechazo del sistema. Esta transformación convertía al propio sitio en una metáfora de la adicción y el deterioro presentes en la película. Es una referencia relevante para estudiar cómo el comportamiento de una interfaz puede comunicar un tema y no limitarse a presentar información.
+- Nada es decorativo: las fotos, las hojas y los chats tienen información.
+- El número desconocido entiende lo que se le escribe. Si no sabés qué hacer, preguntale.
+- El sonido suma mucho: se maneja con el botón del parlante, fijo arriba a la derecha.
+- Si querés empezar de cero, recargá la página (la conversación con el número desconocido se conserva; el botón de reinicio del final la borra).
 
-- [Registro en video del sitio](https://www.youtube.com/watch?v=SNuZjwX7Xxk&t=28s)
-- [Caso de estudio de sus creadores](https://alexandrajugovic.com/requiem)
+## Mapa del recorrido
 
-### A Journal of Insomnia (2013)
+```mermaid
+flowchart TD
+    A[Video del noticiero] -->|scroll| B[Evidencias: cámaras de seguridad]
+    B -->|ordenar las fotos| C[Lockers 3D]
+    C -->|abrir el candado y tomar el celular| D[Celular de Mica]
+    D -->|desbloquearlo y hablar con el número desconocido| E[Colegio en la dimensión paralela]
+    E -->|resolver el aula| F[Regreso hacia arriba]
+    F --> F1[Celular: mensajes nuevos]
+    F --> F2[Lockers con luz normal]
+    F --> F3[Evidencias: una cámara nueva]
+    F3 --> G[Video final]
+    G --> H[Pantalla de cierre / Reiniciar]
+    H -.-> A
+```
 
-Documental interactivo producido por el National Film Board of Canada. El proyecto reunía testimonios, imágenes y videos enviados por personas con insomnio y organizaba la experiencia alrededor de cuatro protagonistas.
+Estados de la historia (`lib/storyProgress.js`): `photos-ordered` → `phone-taken` → `phone-unlocked` → `contact-talked` → `school-solved` → `phone-returned`. Cada sección de la portada está envuelta en un `StoryGate` que la monta recién cuando se completa el paso correspondiente.
 
-La disponibilidad del contenido dependía del horario: durante el día el sitio ofrecía funciones limitadas y, entre las 22:00 y las 03:00, habilitaba la experiencia completa. También solicitaba reservar una cita nocturna. De esta manera, el tiempo, la espera y el contexto real de acceso se incorporaban como recursos narrativos.
+## Tecnologías
 
-El proyecto funciona como referencia para estudiar narrativa documental, participación de usuarios, contenido colectivo y experiencias cuyo estado depende de condiciones externas.
+| Tecnología | Versión | Uso |
+| --- | --- | --- |
+| [Next.js](https://nextjs.org/) (App Router) | 16.4 | Rutas, metadata, Server y Client Components, fuentes. |
+| [React](https://react.dev/) | 19.2 | Interfaz y estado de cada tramo. |
+| [Three.js](https://threejs.org/) | 0.186 | Escenas 3D: lockers, celular y colegio. Implementado con Three.js directo (sin React Three Fiber). |
+| [Firebase](https://firebase.google.com/) | 12.18 | Authentication y Cloud Firestore. |
+| `next/font/google` | — | Tipografías Caveat y Rock Salt. |
+| JavaScript (ES Modules) | — | Todo el proyecto está escrito en JavaScript, sin TypeScript. |
 
-- [Ficha y descripción en MIT Docubase](https://docubase.mit.edu/project/a-journal-of-insomnia/)
-- [Registro de funcionamiento](https://www.youtube.com/watch?v=ihpJDpSVEtw)
-- [Entrevista con sus realizadores](https://vimeo.com/57935529)
-
-## Requisitos obligatorios
-
-### Narrativa y experiencia
-
-- Una premisa definida en una oración.
-- Un recorrido compuesto por un mínimo de tres escenas, capítulos o estados.
-- Un inicio, una progresión y un cierre identificables.
-- Un mínimo de tres elementos coleccionables: pistas, fragmentos, objetos, testimonios o símbolos.
-- Desbloqueo de contenido o modificación del estado a partir de acciones de la persona usuaria.
-- Feedback visual o sonoro para las interacciones principales.
-- Una interfaz coherente con el universo narrativo seleccionado.
-- Diseño responsive.
-- Alternativas accesibles para las interacciones 3D necesarias para avanzar.
-
-### Next.js
-
-- Uso de App Router.
-- Organización de la interfaz mediante componentes.
-- Uso de rutas para representar escenas, capítulos o documentos.
-- Una ruta dinámica como mínimo.
-- Uso justificado de Server Components y Client Components.
-- Metadata específica del proyecto.
-- Estados de carga y de error donde corresponda.
-
-### Three.js
-
-- Una escena 3D integrada a la narrativa y a la interacción.
-- Configuración de escena, cámara y renderer.
-- Uso de geometrías, materiales e iluminación.
-- Animación mediante `requestAnimationFrame`.
-- Interacción mediante raycasting, puntero o scroll.
-- Adaptación del canvas al tamaño disponible.
-- Límite de pixel ratio para controlar el costo de renderizado.
-- Liberación de recursos al desmontar el componente.
-- Incorporación de un recurso desarrollado o adaptado para el proyecto: modelo, textura, geometría procedural, sistema de partículas o shader.
-
-El uso de React Three Fiber es opcional. La implementación inicial se realizará con Three.js directo para identificar los elementos fundamentales de una escena 3D.
-
-### Firebase
-
-- Firebase Authentication anónima, con Google y con email/contraseña.
-- Cloud Firestore para persistir progreso, decisiones o contenido.
-- Asociación de los datos con el usuario autenticado.
-- Reglas de seguridad que impidan el acceso a información de otros usuarios.
-- Indicación del estado de persistencia: remoto, local u offline.
-
-### Documentación
-
-- Concepto y sinopsis.
-- Referencias visuales y narrativas.
-- Mapa del recorrido o diagrama de navegación.
-- Decisiones técnicas principales.
-- Créditos de imágenes, modelos, tipografías, audio y otros recursos.
-- Instrucciones de instalación y configuración.
-- Variables de entorno requeridas.
-- Enlace al deploy público.
-
-## Entregables
-
-1. Repositorio con historial de desarrollo.
-2. Deploy público funcional.
-3. README con la documentación del proyecto.
-4. Mapa de navegación.
-5. Presentación y demostración navegada.
-6. Explicación técnica del código implementado.
-
-## Arquitectura del boilerplate
+## Arquitectura
 
 ```text
 app/
-  archivo/[chapter]/
-    page.js             # ruta dinámica de cada capítulo
-  globals.css           # sistema visual y responsive
-  layout.js             # layout y metadata general
-  page.js               # portada
+  layout.js                 # layout raíz y metadata general
+  page.js                   # portada: el recorrido completo
+  archivo/[chapter]/page.js # ruta dinámica
+  celular/page.js           # vista aislada del modelo del celular
+  lockers/page.js           # vista aislada de la escena de los lockers
+  globals.css               # sistema visual y responsive
 components/
-  Experience.js         # navegación, estado narrativo e interfaz
-  ThreeArtifact.js      # escena Three.js
+  Landing.js                # Server Component que arma el recorrido
+  StoryGate.js              # muestra una sección cuando se completa un paso
+  IntroVideo.js / EndVideo.js / PlayButton.js
+  BackgroundMusic.js        # música de fondo y botón de sonido
+  EvidenceScroll.js         # evidencias con scroll y desafío de ordenarlas
+  LockerRoom.js / LockerScene.js   # lockers 3D, candado y hoja con pistas
+  PhoneScroll.js / PhoneModel.js / PhoneScreen.js  # celular 3D con pantalla HTML
+  phone/                    # bloqueo, inicio, WhatsApp y chat con el número desconocido
+  SchoolScroll.js / SchoolScene.js # colegio en primera persona y pizarrón
 data/
-  chapters.js           # contenido y configuración de capítulos
-hooks/
-  useProgress.js        # persistencia local y remota
+  evidence.js               # evidencias, videos y configuración del desafío
+  lockers.js                # pistas del candado (el código se calcula a partir de ellas)
+  conversations.js          # chats del celular y epílogo
+  dimension.js              # configuración del acertijo del colegio
 lib/
-  firebase.js           # inicialización de Firebase
-firestore.rules         # reglas de acceso por usuario
+  storyProgress.js          # pasos del recorrido y reinicio
+  unknownContact.js         # motor de conversación del número desconocido
+  shapeRecognizer.js        # reconocimiento de figuras dibujadas a mano
+  firebase.js               # inicialización de Firebase
+hooks/
+  useProgress.js            # autenticación y persistencia en Firestore / localStorage
+firestore.rules             # reglas de acceso por usuario
+public/
+  img/ models/ music/ videos/
 ```
 
-Las responsabilidades se distribuyen de la siguiente manera:
+## Decisiones técnicas
 
-- Next.js representa la estructura navegable y las rutas de la aplicación.
-- React administra la interfaz y el significado de las interacciones.
-- Three.js representa y anima el contenido tridimensional.
-- Firebase autentica al usuario y conserva el progreso.
+**Un recorrido en una sola página.** La historia se cuenta como un descenso continuo. En lugar de cambiar de pantalla, cada tramo se monta debajo del anterior cuando se resuelve (`StoryGate`), así que no se puede scrollear hasta una sección que todavía no se ganó. Cuando la historia termina, las secciones ya vistas cambian de estado (luces, mensajes, una evidencia nueva) para que el regreso hacia arriba también sea parte del relato.
 
-La explicación detallada de la escena se encuentra en [GUIA-THREEJS.md](./GUIA-THREEJS.md).
+**Server y Client Components.** `Landing` es un Server Component: compone la página y carga las fuentes con `next/font`. Solo se hidratan las piezas que necesitan el navegador: videos, scroll, escenas Three.js, celular y música (`"use client"`).
 
-## Rutas incluidas
+**Three.js directo.** Cada escena (`LockerScene`, `PhoneModel`, `SchoolScene`) crea su propio `WebGLRenderer`, cámara y luces dentro de un `useEffect` y:
 
-| Ruta | Contenido |
-| --- | --- |
-| `/` | Presentación e ingreso a la experiencia |
-| `/archivo/carrier` | Fragmento 01: La portadora |
-| `/archivo/witness` | Fragmento 02: El testigo |
-| `/archivo/echo` | Fragmento 03: El eco |
+- anima con `requestAnimationFrame` y se pausa cuando la sección no está visible;
+- ajusta el canvas al contenedor con `ResizeObserver`;
+- limita el pixel ratio (`Math.min(devicePixelRatio, 2)`; 1.25 en el colegio, que es la escena más pesada);
+- usa `Raycaster` para tocar puertas, candado y celular, y para detectar paredes al caminar;
+- carga modelos `.glb` con `GLTFLoader`;
+- libera geometrías, materiales, texturas, controles y renderer al desmontarse.
 
-La ruta dinámica se implementa en `app/archivo/[chapter]/page.js`. El parámetro `chapter` se utiliza para seleccionar el contenido y generar metadata específica.
+**Recursos desarrollados para el proyecto.**
 
-## Puesta en marcha
+- La pantalla del celular es una interfaz HTML (bloqueo, inicio, WhatsApp) proyectada sobre el modelo 3D.
+- La hoja con las pistas del locker y el pizarrón se dibujan en un `canvas` y se usan como textura.
+- `lib/shapeRecognizer.js` reconoce figuras dibujadas a mano con geometría (envolvente convexa, áreas inscriptas y redondez), sin servicios externos.
+- `lib/unknownContact.js` es un pequeño motor de conversación: normaliza el texto, detecta la intención por palabras clave y responde según lo que ya se habló, sin usar APIs externas.
+- El código del candado se calcula a partir de las cuentas escritas en `data/lockers.js`, de modo que cambiar las pistas cambia el código.
 
-Requiere Node.js 20 o una versión posterior compatible con Next.js 16.
+**Datos separados de los componentes.** Textos, chats, evidencias, tiempos y pistas viven en `data/`, así se puede ajustar la historia sin tocar la lógica.
+
+**Persistencia.** El avance del recorrido vive en memoria a propósito: si se guardara, después de jugar una vez la página quedaría abierta de punta a punta. La conversación con el número desconocido se guarda en `localStorage` para sobrevivir a una recarga. La autenticación y el progreso en la nube se manejan con `hooks/useProgress.js` (ver más abajo).
+
+## Accesibilidad y responsive
+
+- Diseño adaptado a pantallas angostas (grilla de evidencias de 2 columnas, posiciones propias para mobile).
+- El candado se resuelve desde un panel HTML con botones (no hace falta girar las ruedas en 3D).
+- En el colegio hay controles táctiles en pantalla además de las flechas del teclado.
+- `Escape` cierra los paneles abiertos; los controles tienen `aria-label`.
+
+## Instalación
+
+Requiere **Node.js 20** o superior.
 
 ```bash
+git clone https://github.com/camizalcman/web-transmedia.git
+cd web-transmedia
 npm install
 npm run dev
 ```
 
 Abrir [http://localhost:3000](http://localhost:3000).
 
-Sin variables de entorno, la experiencia utiliza `localStorage` y muestra el estado `LOCAL`.
+Sin variables de entorno la experiencia funciona completa en modo local.
+
+### Scripts
+
+```bash
+npm run dev      # servidor de desarrollo
+npm run build    # build de producción
+npm run start    # ejecuta el build
+npm run lint     # análisis estático
+```
+
+## Variables de entorno
+
+Copiar `.env.example` como `.env.local` y completar:
+
+| Variable | Obligatoria | Descripción |
+| --- | --- | --- |
+| `NEXT_PUBLIC_FIREBASE_API_KEY` | Para usar Firebase | Configuración de la Web App de Firebase. |
+| `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` | Para usar Firebase | |
+| `NEXT_PUBLIC_FIREBASE_PROJECT_ID` | Para usar Firebase | |
+| `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET` | Para usar Firebase | |
+| `NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID` | Para usar Firebase | |
+| `NEXT_PUBLIC_FIREBASE_APP_ID` | Para usar Firebase | |
+| `NEXT_PUBLIC_INTRO_VIDEO_URL` | No | URL externa del video inicial. Por defecto `/videos/VideoIntro.mp4`. |
+| `NEXT_PUBLIC_END_VIDEO_URL` | No | URL externa del video final. Por defecto `/videos/VideoFin.mp4`. |
+
+Las variables `NEXT_PUBLIC_` quedan en el bundle del cliente: la seguridad de los datos depende de Firebase Authentication y de las reglas de Firestore, no de ocultar estas claves.
 
 ## Configuración de Firebase
 
 1. Crear un proyecto y una Web App en Firebase Console.
-2. Habilitar en Authentication los proveedores **Anonymous**, **Google** y **Email/Password**.
+2. En **Authentication**, habilitar los proveedores **Anónimo**, **Google** y **Correo electrónico/contraseña**.
 3. Crear una base **Cloud Firestore**.
-4. Copiar `.env.example` como `.env.local`.
-5. Completar las variables de entorno.
-6. Publicar las reglas incluidas en `firestore.rules`.
-7. Reiniciar el servidor de desarrollo.
+4. Completar `.env.local` con la configuración de la Web App.
+5. Publicar las reglas de `firestore.rules`.
+6. Reiniciar el servidor de desarrollo.
 
-El indicador superior cambia de `LOCAL` a `NUBE` cuando la autenticación y la conexión se realizan correctamente.
-
-Las variables con prefijo `NEXT_PUBLIC_` forman parte del bundle del cliente. La seguridad del acceso a los datos depende de Firebase Authentication y de las reglas de Firestore.
-
-## Colección de usuarios
-
-El boilerplate reutiliza la colección `users`. Cada documento utiliza el UID de Firebase Authentication como identificador:
-
-```js
-// users/{uid}
-{
-  userId: "uid-de-firebase-auth",
-  email: "persona@example.com",
-  displayName: "Nombre visible",
-  photoURL: null,
-  isAnonymous: false,
-  authProvider: "google.com",
-  createdAt: serverTimestamp(),
-  lastLoginAt: serverTimestamp()
-}
-```
-
-La escritura utiliza `{ merge: true }`, por lo que conserva los campos que ya existan en el documento. Para reutilizar perfiles anteriores, sus documentos deben estar identificados con el mismo UID utilizado por Firebase Authentication. Una colección `users` no crea credenciales: las cuentas también deben existir en Authentication.
-
-Si el proyecto ya posee reglas de Firestore, los bloques de `firestore.rules` deben integrarse con las reglas existentes. Publicar el archivo completo sin revisar podría reemplazar otras reglas del proyecto.
-
-## Modelo de datos inicial
+### Modelo de datos
 
 ```js
 // progress/{uid}
 {
-  userId: "uid-del-usuario-anonimo",
-  authProvider: "anonymous",
-  clues: ["tone", "coordinate", "message"],
+  userId: "uid-de-firebase-auth",
+  authProvider: "anonymous" | "google.com" | "password",
+  clues: [],
   updatedAt: serverTimestamp()
 }
-```
 
-El UID se utiliza dos veces de manera intencional:
-
-- como identificador del documento `progress/{uid}`;
-- como valor del campo `userId` para hacer visible la relación en Firestore.
-
-Las reglas verifican que ambos valores coincidan con `request.auth.uid`. El usuario anónimo correspondiente puede consultarse en Firebase Authentication.
-
-Una experiencia ramificada puede extender el documento:
-
-```js
+// users/{uid}
 {
-  clues: [],
-  currentChapter: "carrier",
-  decisions: { answeredCall: true },
-  ending: null
+  userId: "uid-de-firebase-auth",
+  email, displayName, photoURL, isAnonymous, authProvider,
+  createdAt, lastLoginAt
 }
 ```
 
-## Posibles extensiones
+El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen que ambos coincidan con `request.auth.uid`, así que cada persona solo puede leer y escribir sus propios datos.
 
-- Carga de modelos `.glb` con `GLTFLoader`.
-- Audio espacial mediante Web Audio API.
-- Materiales personalizados mediante shaders GLSL.
-- Animaciones vinculadas al scroll.
-- Documentos narrativos mediante rutas dinámicas adicionales.
-- Finales alternativos basados en decisiones persistidas.
-- Contenido administrable desde Firestore.
+## Referencias
 
-## Scripts
+**Narrativas y de interacción**
 
-```bash
-npm run dev      # servidor de desarrollo
-npm run lint     # análisis estático
-npm run build    # build de producción
-npm run start    # ejecución del build
-```
+- *Requiem for a Dream* — sitio web de la película (Hi-ReS!, 2000): la interfaz como parte del relato.
+- *A Journal of Insomnia* (National Film Board of Canada, 2013): experiencia cuyo estado cambia según la interacción.
+- _(completar: películas, series o juegos de terror / dimensiones paralelas que inspiraron la historia)_
+
+**Visuales**
+
+- Estética de cámaras de seguridad (CCTV), noticieros televisivos y ruido analógico.
+- Interfaz de WhatsApp en iOS como referencia para la pantalla del celular.
+- _(completar con referencias visuales propias)_
+
+## Créditos
+
+**Modelos 3D** — Sketchfab, licencia CC BY 4.0
+
+- “School Locker” por Lee Studio
+- “Combination Padlock” por RED2000
+- “Old books” por Arkikon
+- “Textured Books” por sydniekay
+- “Stationery (pencil, pen and eraser)” por Mikhail Antonov
+- “Ruler” por Artieee
+- “School_[hallway]” por yuuuusukeeee
+- “Japanese Classroom” por T I A N
+- “Apple iPhone 13 Pro Max” por _(completar autor y licencia)_
+
+**Tipografías** — Google Fonts, licencia SIL Open Font License
+
+- Caveat
+- Rock Salt
+
+**Audio y video**
+
+- Música de fondo (`music-horror.mp3`): _(completar autor, fuente y licencia)_
+- Video inicial y video final: _(completar: producción propia / herramientas utilizadas)_
+
+**Imágenes**
+
+- Capturas de las cámaras de seguridad y fondo de pantalla del celular: _(completar: producción propia / fuente)_
+
+**Base técnica**
+
+- Boilerplate *SEÑAL 88* de la cátedra Programación III — UMAI.
 
 ---
 
-**Cátedra Programación III — UMAI**
+Proyecto con fines académicos · **Cátedra Programación III — UMAI**
