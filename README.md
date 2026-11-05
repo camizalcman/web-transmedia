@@ -31,11 +31,27 @@ La experiencia es un único recorrido vertical: **se avanza scrolleando hacia ab
 | 1. El noticiero | Video a pantalla completa con la noticia de la desaparición. | Darle Play. Al terminar, aparece la flecha para bajar. |
 | 2. Las evidencias | Las capturas de las cámaras de seguridad del colegio entran en escena con el scroll. | Mirarlas con atención: al final se acomodan en una grilla y hay que **arrastrarlas para ordenarlas**. |
 | 3. Los lockers | Escena 3D con los lockers del colegio. Uno tiene candado. | Abrir puertas, revisar lo que hay adentro y encontrar el código del candado. |
-| 4. El celular | El celular de Mica en 3D, con su pantalla funcionando. | Desbloquearlo, leer sus chats y **responderle al número desconocido** escribiendo libremente. |
+| 4. El celular | El celular de Mica en 3D, con su pantalla funcionando. | Desbloquearlo, leer sus chats y **responderle al número desconocido** escribiendo libremente. Después aparece la flecha para bajar. |
 | 5. La dimensión paralela | El colegio en primera persona, a oscuras y con luces rojas. | Recorrerlo (flechas del teclado o botones en pantalla) y resolver lo que pide el aula. |
-| 6. El regreso | Todo lo anterior, transformado. | Volver hacia arriba, revisar el celular y las evidencias, y ver el video final. |
+| 6. El regreso | Todo lo anterior, transformado. | Volver hacia arriba siguiendo las flechas, revisar el celular y las evidencias, y ver el video final. |
 
 Al terminar aparece una pantalla de cierre con la opción de **reiniciar** el caso desde el principio.
+
+### Flechas que guían el recorrido
+
+Cuando una sección ya está resuelta, una flecha animada indica hacia dónde seguir. Tienen la misma estética que la del video del comienzo, aparecen con un fundido y al tocarlas hacen el scroll solas.
+
+| Sección | Flecha | Cuándo aparece | Lleva a |
+| --- | --- | --- | --- |
+| Video del noticiero | ↓ | En el segundo 30 del video (o al terminar) | Las evidencias |
+| Evidencias | ↓ | Mientras las fotos entran en escena, hasta que forman la grilla | La grilla para ordenarlas |
+| Celular | ↓ | 4 s después de hablar con el número desconocido | El colegio |
+| Colegio | ↑ (aviso de mensajes sin leer) | Al resolver el aula | El celular |
+| Celular, de regreso | ↑ | 6 s después de volver, cuando ya llegaron los mensajes nuevos | Los lockers |
+| Lockers, de regreso | ↑ | 1,5 s después de llegar | Las evidencias |
+| Evidencias, de regreso | ↑ | Junto con la foto nueva | El video final |
+
+Los tiempos se ajustan en las constantes `DOWN_CUE_DELAY` y `UP_CUE_DELAY` de `PhoneScroll.js` y `UP_CUE_DELAY` de `LockerRoom.js`.
 
 **Consejos sin spoilers**
 
@@ -88,6 +104,7 @@ app/
 components/
   Landing.js                # Server Component que arma el recorrido
   StoryGate.js              # muestra una sección cuando se completa un paso
+  ScrollArrow.js            # flecha animada que guía el scroll entre secciones
   IntroVideo.js / EndVideo.js / PlayButton.js
   BackgroundMusic.js        # música de fondo y botón de sonido
   CloudStatus.js            # indicador REMOTO / OFFLINE / LOCAL y botón "Guardar progreso"
@@ -116,6 +133,8 @@ public/
 ## Decisiones técnicas
 
 **Un recorrido en una sola página.** La historia se cuenta como un descenso continuo. En lugar de cambiar de pantalla, cada tramo se monta debajo del anterior cuando se resuelve (`StoryGate`), así que no se puede scrollear hasta una sección que todavía no se ganó. Cuando la historia termina, las secciones ya vistas cambian de estado (luces, mensajes, una evidencia nueva) para que el regreso hacia arriba también sea parte del relato.
+
+**Flechas guía.** Como el recorrido cambia de sentido (se baja hasta el colegio y después hay que volver hacia arriba), cada sección muestra una flecha cuando ya se resolvió. `ScrollArrow` es un único componente para todas, y `useDelayed` la hace aparecer unos segundos después del paso que la habilita (`contact-talked`, `phone-returned`, `school-solved`), así primero se ve lo que pasó y después hacia dónde seguir.
 
 **Server y Client Components.** `Landing` es un Server Component: compone la página y carga las fuentes con `next/font`. Solo se hidratan las piezas que necesitan el navegador: videos, scroll, escenas Three.js, celular y música (`"use client"`).
 
@@ -146,6 +165,7 @@ public/
 - El candado se resuelve desde un panel HTML con botones (no hace falta girar las ruedas en 3D).
 - En el colegio hay controles táctiles en pantalla además de las flechas del teclado.
 - `Escape` cierra los paneles abiertos; los controles tienen `aria-label`.
+- Las flechas guía son botones con `aria-label` (por ejemplo "Volver a los lockers"). Mientras están ocultas no se pueden enfocar con el teclado, y con "reducir movimiento" activado en el sistema dejan de animarse.
 - El indicador de guardado anuncia sus cambios a lectores de pantalla (`aria-live`) y los pasos del panel indican si están completados o pendientes.
 
 ## Instalación
