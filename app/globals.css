@@ -111,6 +111,18 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .evidence-down { z-index: 17; bottom: 22px; }
 .scroll-cue svg { width: 16px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.4; animation: cue 1.8s ease-in-out infinite; }
 @keyframes cue { 0%, 100% { opacity: .4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(8px); } }
+@keyframes cue-up { 0%, 100% { opacity: .4; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-8px); } }
+
+/* Flechas del recorrido (ScrollArrow): la misma de .scroll-cue, hacia abajo
+   pegada al borde inferior o hacia arriba pegada al superior. Entran con un
+   fundido y un pequeño desplazamiento desde el borde. */
+.story-arrow { position: absolute; z-index: 5; left: 50%; display: grid; border: 0; padding: 8px; background: transparent; color: var(--ink); filter: drop-shadow(0 0 6px rgba(0,0,0,.9)); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .8s ease, transform .8s ease; }
+.story-arrow--down { bottom: max(28px, env(safe-area-inset-bottom)); transform: translate(-50%, 14px); }
+.story-arrow--up { top: 22px; transform: translate(-50%, -14px); }
+.story-arrow.is-visible { opacity: .85; pointer-events: auto; transform: translate(-50%, 0); }
+.story-arrow:hover, .story-arrow:focus-visible { opacity: 1; color: var(--red); }
+.story-arrow svg { width: 16px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.4; animation: cue 1.8s ease-in-out infinite; }
+.story-arrow--up svg { animation-name: cue-up; }
 
 /* Evidencias: escenario fijo que avanza con el scroll (--p de 0 a 1) */
 /* Por encima de .noise y .scanlines: las fotos sin la textura de rayas. */
@@ -186,8 +198,8 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .evidence-up { position: absolute; z-index: 17; top: 68px; left: 50%; display: grid; border: 0; padding: 6px; background: transparent; color: var(--ink); filter: drop-shadow(0 0 6px rgba(0,0,0,.9)); cursor: pointer; opacity: calc(var(--exit) * .85); pointer-events: none; transform: translateX(-50%); }
 .evidence-stage[data-exit="on"] .evidence-up { pointer-events: auto; }
 .evidence-up:hover { color: var(--red); opacity: 1; }
-.evidence-up svg { width: 12px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; animation: evidence-up 1.8s ease-in-out infinite; }
-@keyframes evidence-up { 50% { transform: translateY(-6px); } }
+/* Igual a las flechas del celular y los lockers (.story-arrow--up). */
+.evidence-up svg { width: 16px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.4; animation: cue-up 1.8s ease-in-out infinite; }
 .evidence-progress { position: absolute; z-index: 16; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--red); box-shadow: 0 0 12px var(--red); transform: scaleX(var(--p)); transform-origin: left; }
 
 /* Pantallas de carga, error y ruta inexistente (app/loading, error, not-found). */

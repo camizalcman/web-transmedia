@@ -3,10 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import LockerScene from "@/components/LockerScene";
 import PhoneModel from "@/components/PhoneModel";
+import ScrollArrow, { useDelayed } from "@/components/ScrollArrow";
 import { LOCK_CLUES, LOCK_CODE } from "@/data/lockers";
 import { hasStep, markStep, useStep } from "@/lib/storyProgress";
 
 const DIALS = LOCK_CODE.length;
+// Al volver del colegio, cuanto despues de llegar a los lockers aparece la
+// flecha para seguir subiendo hasta las fotos (ms).
+const UP_CUE_DELAY = 1500;
 
 // Los lockers, el panel para ingresar el codigo del candado y, al tocar el
 // celular que esta adentro, la vista interactiva del celular a pantalla completa.
@@ -28,6 +32,17 @@ export default function LockerRoom({ handFont, embedded = false }) {
   const phoneTaken = useStep("phone-taken");
   // Al volver después de resolver el pizarrón, los lockers tienen luz normal.
   const normal = useStep("school-solved");
+  // Escenario de los lockers en pantalla (solo importa al volver del colegio).
+  const stageRef = useRef(null);
+  const [onScreen, setOnScreen] = useState(false);
+  const upCue = useDelayed(embedded && normal && onScreen, UP_CUE_DELAY);
+
+  useEffect(() => {
+    if (!embedded || !normal) return;
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting), { threshold: 0.6 });
+    observer.observe(stageRef.current);
+    return () => observer.disconnect();
+  }, [embedded, normal]);
 
   useEffect(() => {
     if (!embedded) return;
@@ -151,7 +166,19 @@ export default function LockerRoom({ handFont, embedded = false }) {
       className={`locker-scroll ${phoneTaken ? "" : "is-locked"}`}
       aria-label="Lockers del colegio"
     >
-      <div className="locker-page locker-scroll-stage">{near && content}</div>
+      <div ref={stageRef} className="locker-page locker-scroll-stage">
+        {near && content}
+        <ScrollArrow
+          direction="up"
+          visible={upCue}
+          label="Volver a las fotos de las cámaras"
+          onClick={() => {
+            const photos = document.getElementById("evidencias");
+            if (!photos) return;
+            window.scrollTo({ top: photos.offsetTop + photos.offsetHeight - window.innerHeight, behavior: "smooth" });
+          }}
+        />
+      </div>
     </section>
   );
 }

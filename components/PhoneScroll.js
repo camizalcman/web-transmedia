@@ -2,9 +2,16 @@
 
 import { useEffect, useRef, useState } from "react";
 import PhoneModel from "@/components/PhoneModel";
-import { hasStep, markStep } from "@/lib/storyProgress";
+import ScrollArrow, { useDelayed } from "@/components/ScrollArrow";
+import { hasStep, markStep, useStep } from "@/lib/storyProgress";
 
 const clamp = (value) => Math.min(Math.max(value, 0), 1);
+
+// Flechas del celular (ms): hacia abajo, despues de hablar con el numero
+// desconocido (el colegio ya esta abierto); hacia arriba, despues de volver
+// del pizarron, cuando ya llegaron los mensajes nuevos (siguen los lockers).
+const DOWN_CUE_DELAY = 4000;
+const UP_CUE_DELAY = 6000;
 
 // Tramo del recorrido de la seccion (0 a 1) en el que el celular entra en escena.
 const ENTRANCE = [0.15, 0.8];
@@ -16,6 +23,11 @@ export default function PhoneScroll() {
   const sectionRef = useRef(null);
   const entranceRef = useRef(0);
   const [near, setNear] = useState(false);
+  const talked = useStep("contact-talked");
+  const escaped = useStep("school-solved");
+  const returned = useStep("phone-returned");
+  const downCue = useDelayed(talked && !escaped, DOWN_CUE_DELAY);
+  const upCue = useDelayed(returned, UP_CUE_DELAY);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -55,7 +67,24 @@ export default function PhoneScroll() {
 
   return (
     <section ref={sectionRef} className="phone-scroll" aria-label="Celular de la persona desaparecida">
-      <div className="phone-scroll-stage">{near && <PhoneModel entranceRef={entranceRef} onReady={markPhoneReady} />}</div>
+      <div className="phone-scroll-stage">
+        {near && <PhoneModel entranceRef={entranceRef} onReady={markPhoneReady} />}
+        <ScrollArrow
+          direction="down"
+          visible={downCue}
+          label="Bajar al colegio"
+          onClick={() => document.querySelector(".school-scroll")?.scrollIntoView({ behavior: "smooth" })}
+        />
+        <ScrollArrow
+          direction="up"
+          visible={upCue}
+          label="Volver a los lockers"
+          onClick={() => {
+            const lockers = document.querySelector(".locker-scroll");
+            if (lockers) window.scrollTo({ top: lockers.offsetTop, behavior: "smooth" });
+          }}
+        />
+      </div>
     </section>
   );
 }
