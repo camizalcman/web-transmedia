@@ -81,7 +81,7 @@ Estados de la historia (`lib/storyProgress.js`): `photos-ordered` → `phone-tak
 app/
   layout.js                 # layout raíz y metadata general
   page.js                   # portada: el recorrido completo
-  archivo/[chapter]/page.js # ruta dinámica
+  loading.js / error.js / not-found.js  # pantallas de carga, error y 404
   celular/page.js           # vista aislada del modelo del celular
   lockers/page.js           # vista aislada de la escena de los lockers
   globals.css               # sistema visual y responsive
@@ -108,8 +108,6 @@ lib/
   shapeRecognizer.js        # reconocimiento de figuras dibujadas a mano
   firebase.js               # inicialización de Firebase (con caché offline de Firestore)
   cloudSave.js              # sesión, guardado de la investigación y estado de persistencia
-hooks/
-  useProgress.js            # persistencia del prototipo de /archivo (boilerplate)
 firestore.rules             # reglas de acceso por usuario
 public/
   img/ models/ music/ videos/
@@ -263,9 +261,6 @@ El estado sale de los metadatos del documento (`onSnapshot` con `includeMetadata
   email, displayName, photoURL, isAnonymous, authProvider,
   createdAt, lastLoginAt
 }
-
-// progress/{uid} — prototipo de /archivo (hooks/useProgress.js)
-{ userId, authProvider, clues: [], updatedAt }
 ```
 
 ### Reglas
@@ -320,7 +315,7 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 
 **Base técnica**
 
-- Boilerplate *SEÑAL 88* de la cátedra Programación III — UMAI.
+- El proyecto partió del boilerplate *SEÑAL 88* de la cátedra Programación III — UMAI. Su narrativa y sus pantallas (capítulos de `/archivo`, objeto 3D de ejemplo y su guía) se reemplazaron por completo por la historia de *Señal perdida*. Del boilerplate solo quedan la configuración base de Next.js y Firebase.
 
 ---
 

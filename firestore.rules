@@ -30,12 +30,7 @@ service cloud.firestore {
             && request.resource.data.unknownChat.messages.size() <= 400));
     }
 
-    // Progreso del prototipo de /archivo (hooks/useProgress.js).
-    match /progress/{userId} {
-      allow read, delete: if isOwner(userId);
-      allow create, update: if isOwner(userId) && writesOwnId();
-    }
-
+    // Perfil de cada jugador (lib/cloudSave.js).
     match /users/{userId} {
       allow read: if isOwner(userId);
       allow create, update: if isOwner(userId) && writesOwnId();

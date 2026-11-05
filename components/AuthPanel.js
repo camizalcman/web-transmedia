@@ -27,19 +27,14 @@ export default function AuthPanel({
   onGoogle,
   onSubmitEmail,
   user,
-  // Textos del panel: por defecto los del prototipo de /archivo; la portada
-  // (CloudStatus) usa los de "Guardar progreso".
-  kicker = "IDENTIFICACIÓN / FIREBASE AUTH",
-  title = "IDENTIFICAR OPERADOR",
-  intro = null,
-  signOutLabel = "CONTINUAR COMO INVITADO",
-  note = "El acceso como invitado utiliza una cuenta anónima de Firebase. Al crear una cuenta o entrar con Google por primera vez, lo que jugaste como invitado pasa a esa cuenta.",
-  initialMode = "signin",
-  className = "",
-  // Contenido extra debajo del acceso (en la portada: lo guardado de la investigacion).
+  // Titulo y bajada cambian segun haya cuenta o no (los arma CloudStatus).
+  title,
+  intro,
+  // Contenido extra debajo del acceso: el resumen de la investigacion guardada.
   children,
 }) {
-  const [mode, setMode] = useState(initialMode);
+  // La mayoria entra por primera vez: el panel abre en "Crear cuenta".
+  const [mode, setMode] = useState("signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -72,10 +67,10 @@ export default function AuthPanel({
   }
 
   return (
-    <section className={`auth-overlay ${className}`} role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <section className="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
       <div className="auth-panel">
         <button className="auth-close" onClick={onClose} aria-label="Cerrar">×</button>
-        <p className="kicker">{kicker}</p>
+        <p className="kicker">SEÑAL PERDIDA / EXPEDIENTE</p>
         <h2 id="auth-title">{title}</h2>
         {intro && <p className="auth-intro">{intro}</p>}
 
@@ -84,7 +79,7 @@ export default function AuthPanel({
             <small>SESIÓN ACTIVA</small>
             <strong>{user.displayName || user.providerData?.[0]?.displayName || user.email}</strong>
             <span>{user.email || user.providerData?.[0]?.email}</span>
-            <button onClick={handleGuest} disabled={authLoading}>{signOutLabel}</button>
+            <button onClick={handleGuest} disabled={authLoading}>CERRAR SESIÓN</button>
           </div>
         ) : (
           <>
@@ -116,7 +111,7 @@ export default function AuthPanel({
 
             <div className="auth-separator"><span>O</span></div>
             <button className="auth-google" onClick={handleGoogle} disabled={authLoading}>CONTINUAR CON GOOGLE</button>
-            {note && <p className="auth-note">{note}</p>}
+            <p className="auth-note">Sin registrarte también se guarda, pero solo en este navegador.</p>
           </>
         )}
 

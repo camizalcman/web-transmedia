@@ -64,17 +64,12 @@ export default function CloudStatus() {
 
       {open && (
         <AuthPanel
-          className="auth-overlay--story"
-          kicker="SEÑAL PERDIDA / EXPEDIENTE"
           title={name ? "TU INVESTIGACIÓN" : "GUARDAR PROGRESO"}
           intro={
             name
               ? "Tu investigación queda guardada en esta cuenta. Entrá con ella desde cualquier dispositivo para seguirla."
               : "Registrate para no perder tu investigación y seguirla desde otro dispositivo."
           }
-          signOutLabel="CERRAR SESIÓN"
-          note="Sin registrarte también se guarda, pero solo en este navegador."
-          initialMode="signup"
           authError={cloud.authError}
           authLoading={cloud.authLoading}
           onClose={() => setOpen(false)}
