@@ -43,6 +43,7 @@ Al terminar aparece una pantalla de cierre con la opción de **reiniciar** el ca
 - El número desconocido entiende lo que se le escribe. Si no sabés qué hacer, preguntale.
 - El sonido suma mucho: se maneja con el botón del parlante, fijo arriba a la derecha.
 - Si querés empezar de cero, recargá la página (la conversación con el número desconocido se conserva; el botón de reinicio del final la borra).
+- Tu investigación se guarda sola, sin registrarte. Con **Guardar progreso** (arriba a la izquierda) podés crear una cuenta o entrar con Google para no perderla y seguirla desde otro dispositivo.
 
 ## Mapa del recorrido
 
@@ -61,7 +62,7 @@ flowchart TD
     H -.-> A
 ```
 
-Estados de la historia (`lib/storyProgress.js`): `photos-ordered` → `phone-taken` → `phone-unlocked` → `contact-talked` → `school-solved` → `phone-returned`. Cada sección de la portada está envuelta en un `StoryGate` que la monta recién cuando se completa el paso correspondiente.
+Estados de la historia (`lib/storyProgress.js`): `photos-ordered` → `phone-taken` → `phone-unlocked` → `contact-talked` → `school-solved` → `phone-returned`. Cada sección de la portada está envuelta en un `StoryGate` que la monta recién cuando se completa el paso correspondiente. Cada paso nuevo también se registra en Firebase (ver [Persistencia y Firebase](#persistencia-y-firebase)).
 
 ## Tecnologías
 
@@ -70,7 +71,7 @@ Estados de la historia (`lib/storyProgress.js`): `photos-ordered` → `phone-tak
 | [Next.js](https://nextjs.org/) (App Router) | 16.4 | Rutas, metadata, Server y Client Components, fuentes. |
 | [React](https://react.dev/) | 19.2 | Interfaz y estado de cada tramo. |
 | [Three.js](https://threejs.org/) | 0.186 | Escenas 3D: lockers, celular y colegio. Implementado con Three.js directo (sin React Three Fiber). |
-| [Firebase](https://firebase.google.com/) | 12.18 | Authentication y Cloud Firestore. |
+| [Firebase](https://firebase.google.com/) | 12.18 | Authentication (anónimo, Google y email) y Cloud Firestore con caché offline. |
 | `next/font/google` | — | Tipografías Caveat y Rock Salt. |
 | JavaScript (ES Modules) | — | Todo el proyecto está escrito en JavaScript, sin TypeScript. |
 
@@ -89,6 +90,8 @@ components/
   StoryGate.js              # muestra una sección cuando se completa un paso
   IntroVideo.js / EndVideo.js / PlayButton.js
   BackgroundMusic.js        # música de fondo y botón de sonido
+  CloudStatus.js            # indicador REMOTO / OFFLINE / LOCAL y botón "Guardar progreso"
+  AuthPanel.js              # panel de acceso (crear cuenta, ingresar, Google)
   EvidenceScroll.js         # evidencias con scroll y desafío de ordenarlas
   LockerRoom.js / LockerScene.js   # lockers 3D, candado y hoja con pistas
   PhoneScroll.js / PhoneModel.js / PhoneScreen.js  # celular 3D con pantalla HTML
@@ -103,9 +106,10 @@ lib/
   storyProgress.js          # pasos del recorrido y reinicio
   unknownContact.js         # motor de conversación del número desconocido
   shapeRecognizer.js        # reconocimiento de figuras dibujadas a mano
-  firebase.js               # inicialización de Firebase
+  firebase.js               # inicialización de Firebase (con caché offline de Firestore)
+  cloudSave.js              # sesión, guardado de la investigación y estado de persistencia
 hooks/
-  useProgress.js            # autenticación y persistencia en Firestore / localStorage
+  useProgress.js            # persistencia del prototipo de /archivo (boilerplate)
 firestore.rules             # reglas de acceso por usuario
 public/
   img/ models/ music/ videos/
@@ -136,7 +140,7 @@ public/
 
 **Datos separados de los componentes.** Textos, chats, evidencias, tiempos y pistas viven en `data/`, así se puede ajustar la historia sin tocar la lógica.
 
-**Persistencia.** El avance del recorrido vive en memoria a propósito: si se guardara, después de jugar una vez la página quedaría abierta de punta a punta. La conversación con el número desconocido se guarda en `localStorage` para sobrevivir a una recarga. La autenticación y el progreso en la nube se manejan con `hooks/useProgress.js` (ver más abajo).
+**Persistencia.** El avance del recorrido vive en memoria a propósito: si se guardara y se restaurara, después de jugar una vez la página quedaría abierta de punta a punta. Lo que sí se guarda en Firebase es el registro de la investigación (qué expedientes se completaron, si se resolvió y el chat con el número desconocido) mediante `lib/cloudSave.js`. Ese registro no reabre el recorrido al recargar. Detalle en [Persistencia y Firebase](#persistencia-y-firebase).
 
 ## Accesibilidad y responsive
 
@@ -144,6 +148,7 @@ public/
 - El candado se resuelve desde un panel HTML con botones (no hace falta girar las ruedas en 3D).
 - En el colegio hay controles táctiles en pantalla además de las flechas del teclado.
 - `Escape` cierra los paneles abiertos; los controles tienen `aria-label`.
+- El indicador de guardado anuncia sus cambios a lectores de pantalla (`aria-live`) y los pasos del panel indican si están completados o pendientes.
 
 ## Instalación
 
@@ -158,7 +163,7 @@ npm run dev
 
 Abrir [http://localhost:3000](http://localhost:3000).
 
-Sin variables de entorno la experiencia funciona completa en modo local.
+Sin variables de entorno la experiencia funciona completa en modo local: el indicador muestra **LOCAL** y todo se guarda solo en el navegador.
 
 ### Scripts
 
@@ -186,35 +191,90 @@ Copiar `.env.example` como `.env.local` y completar:
 
 Las variables `NEXT_PUBLIC_` quedan en el bundle del cliente: la seguridad de los datos depende de Firebase Authentication y de las reglas de Firestore, no de ocultar estas claves.
 
-## Configuración de Firebase
+## Persistencia y Firebase
+
+### Sesión y cuentas
+
+Al entrar a la portada, `lib/cloudSave.js` inicia una **sesión anónima** de Firebase sin pedir nada: se puede jugar de punta a punta sin registrarse y la investigación igual queda guardada.
+
+El botón **Guardar progreso** (arriba a la izquierda) abre el panel de acceso para:
+
+- **crear una cuenta** con email y contraseña;
+- **ingresar** con una cuenta existente;
+- **entrar con Google**.
+
+Desde la sesión anónima, crear una cuenta o entrar con Google por primera vez **vincula** la cuenta (`linkWithCredential` / `linkWithPopup`): el UID no cambia y lo jugado como invitado pasa a la cuenta. Si la cuenta de Google ya existía, se entra a ella. **Cerrar sesión** vuelve a una sesión anónima nueva.
+
+La cuenta anónima queda atada a ese navegador; registrarse permite seguir la investigación desde otro dispositivo o navegador.
+
+### Qué se guarda
+
+| Dato | Cuándo se guarda |
+| --- | --- |
+| **Expedientes** (pasos 1 a 4) | Al ordenar las fotos de las cámaras, sacar el celular del locker, desbloquearlo y hablar con el número desconocido. En el panel se muestran solo como "Paso 1…4" para no adelantar el juego. |
+| **Investigación resuelta** | Solo cuando el dibujo del pizarrón es correcto (`recognizeSequence(...).correct`). Un dibujo equivocado no la marca. |
+| **Chat con el número desconocido** | Con cada mensaje, como mucho cada 1,5 s. Se guarda también en `localStorage`; si la copia de la nube es más nueva (otro dispositivo u otra cuenta), se usa esa. |
+
+**Reiniciar juego**, en la pantalla final, borra el chat (local y en la nube). Los expedientes y la investigación resuelta se conservan. El atajo de desarrollo `?final` no registra nada.
+
+### Estado de persistencia
+
+El indicador fijo muestra dónde se está guardando. El punto funciona como el REC de una cámara:
+
+| Estado | Punto | Significado |
+| --- | --- | --- |
+| **REMOTO** | rojo fijo | Guardado y confirmado en Firestore. |
+| **SINCRONIZANDO** / **CONECTANDO** | rojo titilando | Hay cambios esperando confirmación, o se está iniciando la sesión. |
+| **OFFLINE** | hueco | Sin conexión: Firestore guarda en el dispositivo (caché persistente en IndexedDB) y sube los cambios al volver la red. |
+| **LOCAL** | gris | Sin configuración de Firebase, o la nube rechazó el acceso: se guarda solo en el navegador. |
+
+El estado sale de los metadatos del documento (`onSnapshot` con `includeMetadataChanges`: `fromCache` y `hasPendingWrites`) y de los eventos `online` / `offline` del navegador.
+
+### Configuración
 
 1. Crear un proyecto y una Web App en Firebase Console.
-2. En **Authentication**, habilitar los proveedores **Anónimo**, **Google** y **Correo electrónico/contraseña**.
+2. En **Authentication → Sign-in method**, habilitar los proveedores **Anónimo**, **Google** y **Correo electrónico/contraseña**.
 3. Crear una base **Cloud Firestore**.
 4. Completar `.env.local` con la configuración de la Web App.
-5. Publicar las reglas de `firestore.rules`.
+5. En **Firestore → Reglas**, reemplazar todo por el contenido de `firestore.rules` y publicar.
 6. Reiniciar el servidor de desarrollo.
 
 ### Modelo de datos
 
 ```js
-// progress/{uid}
+// games/{uid} — investigación de la portada (lib/cloudSave.js)
 {
   userId: "uid-de-firebase-auth",
   authProvider: "anonymous" | "google.com" | "password",
-  clues: [],
+  steps: ["photos-ordered", "phone-taken", ...],
+  evidenceOrdered: true,   // paso 1
+  phoneTaken: true,        // paso 2
+  phoneUnlocked: false,    // paso 3
+  contactTalked: false,    // paso 4
+  solved: false,           // investigación resuelta (pizarrón)
+  lastSolvedAt: Timestamp,
+  unknownChat: { version, messages: [...], clues, talked, solved, savedAt, ... },
   updatedAt: serverTimestamp()
 }
 
-// users/{uid}
+// users/{uid} — perfil
 {
   userId: "uid-de-firebase-auth",
   email, displayName, photoURL, isAnonymous, authProvider,
   createdAt, lastLoginAt
 }
+
+// progress/{uid} — prototipo de /archivo (hooks/useProgress.js)
+{ userId, authProvider, clues: [], updatedAt }
 ```
 
-El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen que ambos coincidan con `request.auth.uid`, así que cada persona solo puede leer y escribir sus propios datos.
+### Reglas
+
+El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen que ambos coincidan con `request.auth.uid`, así que cada persona solo puede leer y escribir sus propios datos. En `games` además:
+
+- solo se aceptan los campos del modelo (un campo inventado se rechaza);
+- `steps` es una lista de hasta 20 elementos y `solved` es booleano;
+- el chat tiene como máximo 400 mensajes.
 
 ## Referencias
 
