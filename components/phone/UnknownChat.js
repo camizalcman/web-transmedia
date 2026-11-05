@@ -89,7 +89,7 @@ export function UnknownNotification({ text, onOpen }) {
 // Si el jugador está a menos de esto del final, los mensajes nuevos lo bajan.
 const STICK_DISTANCE = 80;
 
-export function UnknownChatView({ contact, scrollPositions, onBack }) {
+export function UnknownChatView({ contact, scrollMemory, onBack }) {
   const scrollRef = useRef(null);
   const stickRef = useRef(true);
   const restoredRef = useRef(false);
@@ -101,17 +101,17 @@ export function UnknownChatView({ contact, scrollPositions, onBack }) {
     const node = scrollRef.current;
     if (!restoredRef.current) {
       restoredRef.current = true;
-      const saved = scrollPositions.current[UNKNOWN_ID];
+      const saved = scrollMemory.get(UNKNOWN_ID);
       node.scrollTop = saved ?? node.scrollHeight;
       stickRef.current = saved === undefined || node.scrollHeight - saved - node.clientHeight < STICK_DISTANCE;
       return;
     }
     if (stickRef.current) node.scrollTop = node.scrollHeight;
-  }, [contact.messages.length, contact.typing, scrollPositions]);
+  }, [contact.messages.length, contact.typing, scrollMemory]);
 
   function handleScroll(event) {
     const node = event.currentTarget;
-    scrollPositions.current[UNKNOWN_ID] = node.scrollTop;
+    scrollMemory.set(UNKNOWN_ID, node.scrollTop);
     stickRef.current = node.scrollHeight - node.scrollTop - node.clientHeight < STICK_DISTANCE;
   }
 

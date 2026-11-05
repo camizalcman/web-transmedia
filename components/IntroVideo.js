@@ -35,6 +35,13 @@ export default function IntroVideo({ nextSectionId }) {
     video.play().catch(() => setShowCue(true));
   }
 
+  // El boton del parlante (efecto de mas abajo) llama al start mas reciente.
+  // Se declara antes que los efectos que lo usan.
+  const startRef = useRef(start);
+  useEffect(() => {
+    startRef.current = start;
+  });
+
   useEffect(() => {
     const section = sectionRef.current;
     const video = videoRef.current;
@@ -81,11 +88,6 @@ export default function IntroVideo({ nextSectionId }) {
     window.addEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
     return () => window.removeEventListener(VIDEO_TOGGLE_EVENT, toggleSound);
   }, []);
-
-  const startRef = useRef(start);
-  useEffect(() => {
-    startRef.current = start;
-  });
 
   function goToNextSection() {
     document.getElementById(nextSectionId)?.scrollIntoView({ behavior: "smooth" });

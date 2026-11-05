@@ -95,19 +95,19 @@ export default function SchoolScroll({ handFont, boardFont }) {
     window.scrollTo({ top: section.offsetTop + offset, behavior: "instant" });
   }
 
-  // Botones tactiles: mientras se mantienen apretados mueven o giran.
-  const hold = (axis, value) => ({
-    onPointerDown: (event) => {
-      event.currentTarget.setPointerCapture(event.pointerId);
-      moveRef.current[axis] = value;
-    },
-    onPointerUp: () => {
-      moveRef.current[axis] = 0;
-    },
-    onPointerCancel: () => {
-      moveRef.current[axis] = 0;
-    },
-  });
+  // Botones tactiles: mientras se mantienen apretados mueven o giran. Cada
+  // boton indica su eje y direccion con data-axis y data-value.
+  function pressMove(event) {
+    const { axis, value } = event.currentTarget.dataset;
+    event.currentTarget.setPointerCapture(event.pointerId);
+    moveRef.current[axis] = Number(value);
+  }
+
+  function releaseMove(event) {
+    moveRef.current[event.currentTarget.dataset.axis] = 0;
+  }
+
+  const holdHandlers = { onPointerDown: pressMove, onPointerUp: releaseMove, onPointerCancel: releaseMove };
 
   const stageClass = [
     "school-stage",
@@ -157,10 +157,10 @@ export default function SchoolScroll({ handFont, boardFont }) {
 
         {arrived && !drawing && (
           <div className="school-pad" aria-label="Controles de movimiento">
-            <button {...hold("forward", 1)} aria-label="Avanzar">▲</button>
-            <button {...hold("turn", -1)} aria-label="Girar a la izquierda">◀</button>
-            <button {...hold("forward", -1)} aria-label="Retroceder">▼</button>
-            <button {...hold("turn", 1)} aria-label="Girar a la derecha">▶</button>
+            <button {...holdHandlers} data-axis="forward" data-value="1" aria-label="Avanzar">▲</button>
+            <button {...holdHandlers} data-axis="turn" data-value="-1" aria-label="Girar a la izquierda">◀</button>
+            <button {...holdHandlers} data-axis="forward" data-value="-1" aria-label="Retroceder">▼</button>
+            <button {...holdHandlers} data-axis="turn" data-value="1" aria-label="Girar a la derecha">▶</button>
           </div>
         )}
 

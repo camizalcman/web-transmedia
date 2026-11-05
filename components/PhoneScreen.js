@@ -28,7 +28,18 @@ export default function PhoneScreen() {
   const [openChatId, setOpenChatId] = useState(null);
   const [readChats, setReadChats] = useState(() => new Set());
   const [notification, setNotification] = useState(false);
-  const scrollPositions = useRef({});
+  // Posicion de lectura de cada chat (y cuantos mensajes tenia al dejarlo).
+  // Los chats la leen y la guardan con get/set: no modifican nada que les
+  // llegue por props.
+  const [scrollMemory] = useState(() => {
+    const positions = {};
+    return {
+      get: (key) => positions[key],
+      set: (key, value) => {
+        positions[key] = value;
+      },
+    };
+  });
   const contact = useUnknownContact(screen === "whatsapp" && openChatId === UNKNOWN_ID);
   const { appeared, talked, appear, open: openContact } = contact;
   const allChatsRead = chats.every((chat) => readChats.has(chat.id));
@@ -118,7 +129,7 @@ export default function PhoneScreen() {
         <WhatsApp
           openChatId={openChatId}
           readChats={readChats}
-          scrollPositions={scrollPositions}
+          scrollMemory={scrollMemory}
           contact={contact}
           extraMessages={extraMessages}
           extraUnread={extraUnread}

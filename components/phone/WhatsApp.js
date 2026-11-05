@@ -45,7 +45,7 @@ function Decoration({ children, className = "" }) {
 export default function WhatsApp({
   openChatId,
   readChats,
-  scrollPositions,
+  scrollMemory,
   contact,
   extraMessages = {},
   extraUnread = {},
@@ -63,9 +63,9 @@ export default function WhatsApp({
     <div className="wa">
       <StatusBar />
       {unknownOpen ? (
-        <UnknownChatView contact={contact} scrollPositions={scrollPositions} onBack={onBack} />
+        <UnknownChatView contact={contact} scrollMemory={scrollMemory} onBack={onBack} />
       ) : chat ? (
-        <ChatView key={chat.id} chat={chat} scrollPositions={scrollPositions} onBack={onBack} />
+        <ChatView key={chat.id} chat={chat} scrollMemory={scrollMemory} onBack={onBack} />
       ) : (
         <ChatList
           chats={allChats}
@@ -154,7 +154,7 @@ function ChatList({ chats, readChats, extraUnread, contact, onOpenChat }) {
   );
 }
 
-function ChatView({ chat, scrollPositions, onBack }) {
+function ChatView({ chat, scrollMemory, onBack }) {
   const scrollRef = useRef(null);
 
   const countKey = `${chat.id}:mensajes`;
@@ -165,10 +165,10 @@ function ChatView({ chat, scrollPositions, onBack }) {
   // que hayan llegado mensajes nuevos desde entonces: ahí, el final).
   useLayoutEffect(() => {
     const node = scrollRef.current;
-    const saved = scrollPositions.current[chat.id];
-    const savedCount = scrollPositions.current[countKey] ?? countRef.current;
+    const saved = scrollMemory.get(chat.id);
+    const savedCount = scrollMemory.get(countKey) ?? countRef.current;
     node.scrollTop = saved !== undefined && savedCount >= countRef.current ? saved : node.scrollHeight;
-  }, [chat.id, countKey, scrollPositions]);
+  }, [chat.id, countKey, scrollMemory]);
 
   // Un mensaje nuevo con el chat abierto baja hasta el final.
   useLayoutEffect(() => {
@@ -196,8 +196,8 @@ function ChatView({ chat, scrollPositions, onBack }) {
         ref={scrollRef}
         className="wa-messages"
         onScroll={(event) => {
-          scrollPositions.current[chat.id] = event.currentTarget.scrollTop;
-          scrollPositions.current[countKey] = chat.messages.length;
+          scrollMemory.set(chat.id, event.currentTarget.scrollTop);
+          scrollMemory.set(countKey, chat.messages.length);
         }}
       >
         <li className="wa-day">Hoy</li>
