@@ -113,6 +113,73 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 .music-toggle { position: fixed; z-index: 30; top: 14px; right: 24px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid #4d554e; border-radius: 50%; padding: 0; background: rgba(0,0,0,.45); color: var(--muted); cursor: pointer; transition: color .2s, border-color .2s, box-shadow .2s; }
 .music-toggle svg { width: 18px; height: 18px; }
 .music-toggle:hover, .music-toggle[aria-pressed="true"] { border-color: var(--red); color: var(--red); box-shadow: 0 0 12px rgba(214,31,38,.35); }
+
+/* Indicador de guardado (REMOTO / OFFLINE / LOCAL) y boton "Guardar progreso".
+   Colores de la portada (negro y rojo) con una letra sin serifa, mas facil de
+   leer en tamaño chico que la Courier. El punto es como el REC de una camara:
+   fijo cuando esta guardado en la nube, titila mientras sincroniza y queda
+   hueco sin conexion. Arriba a la izquierda, a la altura del parlante; la
+   barra de las evidencias deja lugar (ver .evidence-hud mas abajo). */
+.cloud-status, .auth-overlay--story { --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif; }
+.cloud-status { --state: var(--muted); position: fixed; z-index: 30; top: 14px; left: 24px; height: 34px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--line); padding: 0 14px; background: rgba(0,0,0,.6); color: var(--muted); font: 600 11px var(--sans); letter-spacing: .08em; text-transform: uppercase; }
+.landing .evidence-hud { padding-left: 330px; }
+.cloud-status.is-remote, .cloud-status.is-syncing, .cloud-status.is-connecting { --state: var(--red); }
+.cloud-status.is-offline { --state: var(--ink); }
+.cloud-status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--state); }
+.cloud-status.is-remote .cloud-status-dot { box-shadow: 0 0 10px var(--red); }
+.cloud-status.is-syncing .cloud-status-dot, .cloud-status.is-connecting .cloud-status-dot { animation: cloud-pulse .8s ease-in-out infinite alternate; }
+.cloud-status.is-offline .cloud-status-dot { border: 1px solid var(--ink); background: transparent; }
+.cloud-status-label { color: var(--state); }
+.cloud-status-user { max-width: 150px; overflow: hidden; border: 0; border-left: 1px solid var(--line); padding: 0 0 0 10px; background: transparent; color: var(--ink); font: inherit; letter-spacing: inherit; text-transform: inherit; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; transition: color .2s, text-shadow .2s; }
+.cloud-status-user:hover { color: var(--red); text-shadow: 0 0 10px rgba(214,31,38,.45); }
+@keyframes cloud-pulse { from { opacity: .25; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .cloud-status-dot { animation: none !important; } }
+.auth-overlay .auth-panel { max-height: calc(100svh - 40px); overflow-y: auto; }
+
+/* Panel "Guardar progreso" de la portada (AuthPanel con auth-overlay--story) */
+.auth-overlay--story { background: rgba(0,0,0,.92); backdrop-filter: blur(6px); }
+.auth-overlay--story .auth-panel { border-color: rgba(214,31,38,.45); background: var(--black); box-shadow: 0 0 60px rgba(214,31,38,.12), 0 30px 100px rgba(0,0,0,.7); }
+.auth-overlay--story .auth-panel::before { border-color: rgba(214,31,38,.08); }
+.auth-overlay--story .auth-panel { font-family: var(--sans); }
+.auth-overlay--story .auth-panel button, .auth-overlay--story .auth-panel input { font-family: var(--sans); }
+.auth-overlay--story .kicker { margin: 0; color: var(--red); font-size: 12px; font-weight: 600; letter-spacing: .12em; }
+.auth-overlay--story .auth-panel h2 { margin: 8px 0 12px; font-family: var(--sans); font-size: clamp(24px, 4vw, 32px); font-weight: 800; line-height: 1.1; letter-spacing: .02em; text-transform: uppercase; }
+.auth-overlay--story .auth-intro { margin: 0 0 24px; color: #c4c9bd; font-size: 15px; line-height: 1.5; }
+.auth-overlay--story .auth-close { color: var(--muted); transition: color .2s; }
+.auth-overlay--story .auth-close:hover { color: var(--red); }
+.auth-overlay--story .auth-tabs { border-color: var(--line); }
+.auth-overlay--story .auth-tabs button { color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; }
+.auth-overlay--story .auth-tabs button.active { background: rgba(214,31,38,.14); color: var(--red); }
+.auth-overlay--story .auth-form label { color: #c4c9bd; font-size: 12px; font-weight: 600; letter-spacing: .06em; }
+.auth-overlay--story .auth-form input { border-color: var(--line); background: #000; font-size: 15px; }
+.auth-overlay--story .auth-form input:focus { border-color: var(--red); box-shadow: 0 0 16px rgba(214,31,38,.18); }
+.auth-overlay--story .auth-primary, .auth-overlay--story .auth-google, .auth-overlay--story .auth-current button { padding: 14px; font-size: 13px; font-weight: 700; letter-spacing: .06em; }
+.auth-overlay--story .auth-primary { border-color: var(--red); background: var(--red); color: #fff; transition: background .2s, color .2s, box-shadow .2s; }
+.auth-overlay--story .auth-primary:hover:not(:disabled) { background: transparent; color: var(--red); box-shadow: 0 0 24px rgba(214,31,38,.25); }
+.auth-overlay--story .auth-google, .auth-overlay--story .auth-current button { border-color: var(--line); background: transparent; color: var(--ink); transition: border-color .2s, color .2s; }
+.auth-overlay--story .auth-google:hover:not(:disabled), .auth-overlay--story .auth-current button:hover:not(:disabled) { border-color: var(--red); color: var(--red); }
+.auth-overlay--story .auth-separator { color: var(--muted); font-size: 12px; }
+.auth-overlay--story .auth-separator::before, .auth-overlay--story .auth-separator::after { background: var(--line); }
+.auth-overlay--story .auth-note { color: #a3a99f; font-size: 13px; line-height: 1.5; }
+.auth-overlay--story .auth-error { color: #ff8a8a; font-size: 14px; line-height: 1.5; }
+.auth-overlay--story .auth-current small { color: var(--red); font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.auth-overlay--story .auth-current strong { font-size: 20px; font-weight: 700; }
+.auth-overlay--story .auth-current span { color: #a3a99f; font-size: 14px; }
+
+/* Resumen de la investigacion guardada (dentro del panel) */
+.cloud-summary { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 18px; }
+.cloud-summary small { color: var(--red); font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.cloud-summary p { margin: 6px 0 14px; color: #a3a99f; font-size: 13px; line-height: 1.5; }
+.cloud-case { display: flex; justify-content: space-between; align-items: baseline; border: 1px solid var(--line); padding: 12px 14px; }
+.cloud-case span { color: #a3a99f; font-size: 12px; font-weight: 600; letter-spacing: .08em; }
+.cloud-case strong { color: var(--red); font-size: 16px; font-weight: 800; letter-spacing: .08em; text-shadow: 0 0 12px rgba(214,31,38,.4); }
+.cloud-case.is-solved { border-color: rgba(214,31,38,.6); background: rgba(214,31,38,.08); }
+.cloud-case.is-solved strong { color: var(--ink); text-shadow: none; }
+.cloud-files { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px; margin: 14px 0 0; padding: 0; list-style: none; color: #7d847b; font-size: 14px; line-height: 1.4; }
+.cloud-files li { display: flex; gap: 10px; }
+.cloud-files li.is-done { color: var(--ink); }
+.cloud-files li.is-done > span:first-child { color: var(--red); text-shadow: 0 0 8px rgba(214,31,38,.5); }
+.cloud-summary .cloud-files-count { margin: 14px 0 0; font-size: 12px; font-weight: 600; letter-spacing: .06em; }
 .scroll-cue { position: absolute; z-index: 3; left: 50%; bottom: max(28px, env(safe-area-inset-bottom)); display: grid; border: 0; padding: 8px; background: transparent; filter: drop-shadow(0 0 6px rgba(0,0,0,.8)); cursor: pointer; opacity: 0; pointer-events: none; transform: translate(-50%, 14px); transition: opacity .8s ease, transform .8s ease; }
 .scroll-cue.is-visible { opacity: .8; pointer-events: auto; transform: translate(-50%, 0); }
 .scroll-cue:hover { opacity: 1; color: var(--red); }
@@ -603,6 +670,11 @@ button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
 
   .evidence-hud { padding: 18px 110px 18px 18px; font-size: 9px; }
   .music-toggle { top: 12px; right: 14px; }
+  /* En pantallas angostas la barra de las evidencias no deja lugar arriba:
+     el indicador baja a la esquina inferior izquierda. */
+  .cloud-status { top: auto; left: 12px; bottom: max(12px, env(safe-area-inset-bottom)); height: 30px; padding: 0 10px; font-size: 10px; }
+  .cloud-status-user { max-width: 130px; }
+  .landing .evidence-hud { padding-left: 18px; }
   .evidence-scroll { height: 500svh; }
   .evidence { --d: var(--mdepth); --px: var(--mx); --py: var(--my); --pw: var(--mw); }
   .evidence--left { --from-x: -110vw; }

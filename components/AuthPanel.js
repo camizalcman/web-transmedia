@@ -8,6 +8,11 @@ const ERROR_MESSAGES = {
   "auth/invalid-email": "El formato del email no es válido.",
   "auth/popup-closed-by-user": "La ventana de Google se cerró antes de completar el acceso.",
   "auth/weak-password": "La contraseña debe tener al menos seis caracteres.",
+  "auth/popup-blocked": "El navegador bloqueó la ventana de Google. Permití las ventanas emergentes e intentá de nuevo.",
+  "auth/operation-not-allowed": "Ese método de acceso no está habilitado en Firebase.",
+  "auth/admin-restricted-operation": "El acceso anónimo no está habilitado en Firebase.",
+  "auth/network-request-failed": "No hay conexión. Probá de nuevo cuando vuelva la red.",
+  "auth/provider-already-linked": "Esta cuenta ya está vinculada.",
 };
 
 function getErrorMessage(code) {
@@ -22,8 +27,19 @@ export default function AuthPanel({
   onGoogle,
   onSubmitEmail,
   user,
+  // Textos del panel: por defecto los del prototipo de /archivo; la portada
+  // (CloudStatus) usa los de "Guardar progreso".
+  kicker = "IDENTIFICACIÓN / FIREBASE AUTH",
+  title = "IDENTIFICAR OPERADOR",
+  intro = null,
+  signOutLabel = "CONTINUAR COMO INVITADO",
+  note = "El acceso como invitado utiliza una cuenta anónima de Firebase. Al crear una cuenta o entrar con Google por primera vez, lo que jugaste como invitado pasa a esa cuenta.",
+  initialMode = "signin",
+  className = "",
+  // Contenido extra debajo del acceso (en la portada: lo guardado de la investigacion).
+  children,
 }) {
-  const [mode, setMode] = useState("signin");
+  const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -56,18 +72,19 @@ export default function AuthPanel({
   }
 
   return (
-    <section className="auth-overlay" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <section className={`auth-overlay ${className}`} role="dialog" aria-modal="true" aria-labelledby="auth-title">
       <div className="auth-panel">
-        <button className="auth-close" onClick={onClose} aria-label="Cerrar acceso">×</button>
-        <p className="kicker">IDENTIFICACIÓN / FIREBASE AUTH</p>
-        <h2 id="auth-title">IDENTIFICAR OPERADOR</h2>
+        <button className="auth-close" onClick={onClose} aria-label="Cerrar">×</button>
+        <p className="kicker">{kicker}</p>
+        <h2 id="auth-title">{title}</h2>
+        {intro && <p className="auth-intro">{intro}</p>}
 
         {user && !user.isAnonymous ? (
           <div className="auth-current">
             <small>SESIÓN ACTIVA</small>
-            <strong>{user.displayName || user.email}</strong>
-            <span>{user.email}</span>
-            <button onClick={handleGuest} disabled={authLoading}>CONTINUAR COMO INVITADO</button>
+            <strong>{user.displayName || user.providerData?.[0]?.displayName || user.email}</strong>
+            <span>{user.email || user.providerData?.[0]?.email}</span>
+            <button onClick={handleGuest} disabled={authLoading}>{signOutLabel}</button>
           </div>
         ) : (
           <>
@@ -99,9 +116,11 @@ export default function AuthPanel({
 
             <div className="auth-separator"><span>O</span></div>
             <button className="auth-google" onClick={handleGoogle} disabled={authLoading}>CONTINUAR CON GOOGLE</button>
-            <p className="auth-note">El acceso como invitado utiliza una cuenta anónima de Firebase.</p>
+            {note && <p className="auth-note">{note}</p>}
           </>
         )}
+
+        {children}
 
         {authError && <p className="auth-error" role="alert">{getErrorMessage(authError)}</p>}
       </div>

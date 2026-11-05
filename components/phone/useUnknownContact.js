@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { PHONE_TIME } from "@/data/conversations";
+import { getCloudState, saveChat, subscribeCloud } from "@/lib/cloudSave";
 import { UNKNOWN_CONTACT_STORAGE_KEY, hasStep } from "@/lib/storyProgress";
 import { FIRST_MESSAGE, FIRST_OPEN_MESSAGES, detectIntent, replyTo } from "@/lib/unknownContact";
 
@@ -16,6 +17,11 @@ import { FIRST_MESSAGE, FIRST_OPEN_MESSAGES, detectIntent, replyTo } from "@/lib
 // en cola (`answered: false`) y se contestan en orden, nunca dos a la vez.
 // Como la cola y el outbox se guardan, una recarga a mitad de una respuesta
 // la retoma sin duplicar mensajes.
+//
+// Nube: cada cambio tambien se sube a Firebase (cloudSave.saveChat) con la
+// hora en que se guardo (`savedAt`). Si la copia de la nube es mas nueva que
+// la del navegador (se jugo en otro dispositivo, o se ingreso con una cuenta
+// que ya tenia el chat) se usa esa; si la nube no tiene nada, se sube la local.
 
 const STORAGE_KEY = UNKNOWN_CONTACT_STORAGE_KEY;
 const VERSION = 1;
@@ -105,18 +111,60 @@ export default function useUnknownContact(isOpen) {
   const [state, setState] = useState(load);
   const [typing, setTyping] = useState(false);
   const isOpenRef = useRef(isOpen);
+  // Ultimo estado ya guardado (al montar, el que se cargo) y cuando se guardo.
+  const persistedRef = useRef(state);
+  const savedAtRef = useRef(state.savedAt ?? 0);
 
   useEffect(() => {
     isOpenRef.current = isOpen;
   });
 
   useEffect(() => {
+    if (state === persistedRef.current) return;
+    const saved = { ...state, savedAt: Date.now() };
+    persistedRef.current = state;
+    savedAtRef.current = saved.savedAt;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
     } catch {
       // Sin almacenamiento disponible el chat sigue funcionando en memoria.
     }
+    saveChat(saved);
   }, [state]);
+
+  // Copia de la nube: se compara cada vez que llega el documento de la partida.
+  useEffect(() => {
+    let uploaded = false;
+    function sync() {
+      const cloud = getCloudState();
+      if (!cloud.loaded || !cloud.game) return;
+      const remote = cloud.game.unknownChat;
+      if (!remote || remote.version !== VERSION) {
+        // La nube no tiene el chat: se sube el que hay en el navegador.
+        if (!uploaded && persistedRef.current.appeared) {
+          uploaded = true;
+          saveChat({ ...persistedRef.current, savedAt: savedAtRef.current || Date.now() });
+        }
+        return;
+      }
+      if ((remote.savedAt ?? 0) <= savedAtRef.current) return;
+      const next = { ...INITIAL, ...remote };
+      persistedRef.current = next;
+      savedAtRef.current = remote.savedAt;
+      try {
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      } catch {
+        // Sin almacenamiento disponible el chat sigue funcionando en memoria.
+      }
+      setState(next);
+    }
+    const initial = window.setTimeout(sync, 0);
+    const unsubscribe = subscribeCloud(sync);
+    return () => {
+      window.clearTimeout(initial);
+      unsubscribe();
+    };
+  }, []);
 
   // Motor de la conversación: primero se envía lo que haya en el outbox (de a
   // un mensaje); si está vacío, se contesta el mensaje pendiente más viejo.

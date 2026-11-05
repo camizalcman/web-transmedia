@@ -1,22 +1,44 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /progress/{userId} {
-      allow read, delete: if request.auth != null
-        && request.auth.uid == userId;
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
 
-      allow create, update: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.userId == request.auth.uid;
+    function writesOwnId() {
+      return request.resource.data.userId == request.auth.uid;
+    }
+
+    // Partida de la portada (lib/cloudSave.js).
+    match /games/{userId} {
+      allow read, delete: if isOwner(userId);
+
+      allow create, update: if isOwner(userId)
+        && writesOwnId()
+        && request.resource.data.keys().hasOnly([
+          'userId', 'authProvider', 'steps',
+          'evidenceOrdered', 'phoneTaken', 'phoneUnlocked', 'contactTalked',
+          'solved', 'lastSolvedAt',
+          'unknownChat', 'updatedAt'
+        ])
+        && (!('steps' in request.resource.data)
+          || (request.resource.data.steps is list && request.resource.data.steps.size() <= 20))
+        && (!('solved' in request.resource.data) || request.resource.data.solved is bool)
+        && (!('unknownChat' in request.resource.data)
+          || (request.resource.data.unknownChat is map
+            && request.resource.data.unknownChat.messages is list
+            && request.resource.data.unknownChat.messages.size() <= 400));
+    }
+
+    // Progreso del prototipo de /archivo (hooks/useProgress.js).
+    match /progress/{userId} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && writesOwnId();
     }
 
     match /users/{userId} {
-      allow read: if request.auth != null
-        && request.auth.uid == userId;
-
-      allow create, update: if request.auth != null
-        && request.auth.uid == userId
-        && request.resource.data.userId == request.auth.uid;
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId) && writesOwnId();
     }
   }
 }

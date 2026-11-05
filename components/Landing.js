@@ -1,5 +1,6 @@
 import { Caveat, Rock_Salt } from "next/font/google";
 import BackgroundMusic from "@/components/BackgroundMusic";
+import CloudStatus from "@/components/CloudStatus";
 import DevShortcut from "@/components/DevShortcut";
 import EndVideo from "@/components/EndVideo";
 import EvidenceScroll from "@/components/EvidenceScroll";
@@ -33,6 +34,8 @@ export default function Landing() {
       <IntroVideo nextSectionId="evidencias" />
       <EndVideo />
       <BackgroundMusic startId="evidencias" />
+      {/* Sesion de Firebase e indicador de guardado (REMOTO / OFFLINE / LOCAL). */}
+      <CloudStatus />
       <EvidenceScroll id="evidencias" />
       {/* Los lockers aparecen recién al ordenar las fotos de las cámaras. */}
       <StoryGate step="photos-ordered">
