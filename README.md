@@ -3,7 +3,7 @@
 > Experiencia web transmedia de terror · Next.js + Three.js + Firebase
 > TP6 — Programación III · UMAI · 2026
 
-**Deploy:** _(completar con el enlace público)_
+**Deploy:** https://web-transmedia.vercel.app/
 **Repositorio:** https://github.com/camizalcman/web-transmedia
 
 ---
@@ -297,7 +297,7 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 
 - *Requiem for a Dream* — sitio web de la película (Hi-ReS!, 2000): la interfaz como parte del relato.
 - *A Journal of Insomnia* (National Film Board of Canada, 2013): experiencia cuyo estado cambia según la interacción.
-- _(completar: películas, series o juegos de terror / dimensiones paralelas que inspiraron la historia)_
+- La historia es original: no se basa en películas, series ni juegos.
 
 **Visuales**
 
@@ -327,11 +327,12 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 **Audio y video**
 
 - Música de fondo (`music-horror.mp3`): _(completar autor, fuente y licencia)_
-- Video inicial y video final: _(completar: producción propia / herramientas utilizadas)_
+- Video inicial y video final: producción propia.
 
 **Imágenes**
 
-- Capturas de las cámaras de seguridad y fondo de pantalla del celular: _(completar: producción propia / fuente)_
+- Capturas de las cámaras de seguridad (evidencias): producción propia, generadas con IA.
+- Fondo de pantalla del celular: _(completar: producción propia / fuente)_
 
 **Base técnica**
 
