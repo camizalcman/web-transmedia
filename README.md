@@ -10,11 +10,11 @@
 
 ## Premisa
 
-> Una noche, Mica baja las escaleras del colegio para encontrarse con sus amigas y nunca llega a la salida: con las cámaras de seguridad, su celular y los mensajes de alguien que no debería poder escribir, tenés que descubrir dónde quedó atrapada y abrirle el camino de vuelta.
+> Una alumna está desaparecida y la última vez que se la vio fue adentro del colegio. Hay fotos y evidencia de que estuvo ahí, pero nadie la vio salir y ninguna cámara registró su salida. Todos la están buscando.
 
 ## Concepto y sinopsis
 
-*Señal perdida* es un relato de desaparición contado a través de los restos digitales que dejó: un noticiero, las grabaciones de las cámaras del colegio, un locker cerrado con candado y un celular que todavía tiene batería.
+*Señal perdida* es un relato paranormal de desaparición contado a través de diferentes evidencias: una nota en un noticiero, las grabaciones de las cámaras del colegio, un locker cerrado con candado y un celular que todavía tiene batería.
 
 La experiencia empieza como empieza cualquier caso: con la noticia en la televisión. A partir de ahí la persona usuaria deja de mirar y empieza a investigar. Revisa las cámaras, encuentra el locker de Mica, logra abrirlo y recupera su celular. En los chats aparecen los últimos mensajes de Mica, cada vez más desesperados: las luces se apagaron, todo se volvió rojo, baja y baja escaleras y no llega nunca. Y entonces escribe un **número desconocido**.
 
