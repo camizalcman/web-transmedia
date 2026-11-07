@@ -305,6 +305,14 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 - Interfaz de WhatsApp en iOS como referencia para la pantalla del celular.
 - _(completar con referencias visuales propias)_
 
+## Uso de inteligencia artificial
+
+En este proyecto usé herramientas de IA como apoyo en el desarrollo:
+
+- **Código:** usé Claude Code (Anthropic) como asistente para programar, buscar errores e intervenir los modelos 3D. Revisé, probé y ajusté cada cambio antes de incorporarlo.
+- **Imágenes:** las capturas de las cámaras de seguridad se generaron con ChatGPT a partir de indicaciones propias. También con ChatGPT creé las imágenes que funcionan como primer y último fotograma de los videos de inicio y de fin.
+- **Video:** el video de inicio se realizó con Adobe Firefly a partir de las imágenes creadas con ChatGPT.
+
 ## Créditos
 
 **Modelos 3D** — Sketchfab, licencia CC BY 4.0
@@ -327,11 +335,12 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 **Audio y video**
 
 - Música de fondo (`music-horror.mp3`): _(completar autor, fuente y licencia)_
-- Video inicial y video final: producción propia.
+- Video inicial: realizado con Adobe Firefly a partir de imágenes creadas con ChatGPT (ver [Uso de inteligencia artificial](#uso-de-inteligencia-artificial)).
+- Video final: producción propia.
 
 **Imágenes**
 
-- Capturas de las cámaras de seguridad (evidencias): producción propia, generadas con IA.
+- Capturas de las cámaras de seguridad (evidencias): producción propia, generadas con ChatGPT.
 - Fondo de pantalla del celular: _(completar: producción propia / fuente)_
 
 **Base técnica**
