@@ -311,7 +311,7 @@ En este proyecto usé herramientas de IA como apoyo en el desarrollo:
 
 - **Código:** usé Claude Code (Anthropic) como asistente para programar, buscar errores e intervenir los modelos 3D. Revisé, probé y ajusté cada cambio antes de incorporarlo.
 - **Imágenes:** las capturas de las cámaras de seguridad se generaron con ChatGPT a partir de indicaciones propias. También con ChatGPT creé las imágenes que funcionan como primer y último fotograma de los videos de inicio y de fin.
-- **Video:** los videos de inicio y de fin se realizaron con Adobe Firefly a partir de las imágenes creadas con ChatGPT.
+- **Video:** los videos de inicio y de fin se realizaron con Adobe Firefly a partir de las imágenes creadas con ChatGPT. Después los edité manualmente en CapCut, y la voz se produjo con otro programa.
 
 ## Créditos
 
