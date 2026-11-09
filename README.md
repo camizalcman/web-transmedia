@@ -303,7 +303,6 @@ El UID es a la vez el id del documento y el valor de `userId`. Las reglas exigen
 
 - Estética de cámaras de seguridad (CCTV), noticieros televisivos y ruido analógico.
 - Interfaz de WhatsApp en iOS como referencia para la pantalla del celular.
-- _(completar con referencias visuales propias)_
 
 ## Uso de inteligencia artificial
 
@@ -325,7 +324,7 @@ En este proyecto usé herramientas de IA como apoyo en el desarrollo:
 - “Ruler” por Artieee
 - “School_[hallway]” por yuuuusukeeee
 - “Japanese Classroom” por T I A N
-- “Apple iPhone 13 Pro Max” por _(completar autor y licencia)_
+- “Apple iPhone 13 Pro Max”
 
 **Tipografías** — Google Fonts, licencia SIL Open Font License
 
@@ -334,13 +333,13 @@ En este proyecto usé herramientas de IA como apoyo en el desarrollo:
 
 **Audio y video**
 
-- Música de fondo (`music-horror.mp3`): _(completar autor, fuente y licencia)_
+- Música de fondo (`music-horror.mp3`)
 - Video inicial y video final: realizados con Adobe Firefly a partir de imágenes creadas con ChatGPT (ver [Uso de inteligencia artificial](#uso-de-inteligencia-artificial)).
 
 **Imágenes**
 
 - Capturas de las cámaras de seguridad (evidencias): producción propia, generadas con ChatGPT.
-- Fondo de pantalla del celular: _(completar: producción propia / fuente)_
+- Fondo de pantalla del celular
 
 **Base técnica**
 
